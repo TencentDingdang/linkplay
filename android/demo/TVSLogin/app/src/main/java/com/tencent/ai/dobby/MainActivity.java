@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.tencent.ai.tvs.AuthorizeListener;
 import com.tencent.ai.tvs.BindingListener;
 import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELocationType;
+import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
 import com.tencent.ai.tvs.info.LocManager;
 import com.tencent.ai.tvs.info.LocationInfo;
@@ -22,18 +26,20 @@ import com.tencent.connect.common.Constants;
 
 public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener {
 
-    private Button wxLoginBtn, qqOpenLoginBtn, wxLogoutBtn, qqOpenLogoutBtn;
-    private TextView atTxt, rtTxt, atTxtQQOpen;
 
-    private String appidWx = "wxd077c3460b51e427";
-    private String appidQQOpen = "222222";
+    private static final String appidWx = "wxd077c3460b51e427";
+    private static final String appidQQOpen = "222222";
 
     private LoginProxy proxy;
 
     private WxInfoManager wxInfoManager;
     private QQOpenInfoManager qqOpenInfoManager;
 
-    private Button wxJumpUserCenterBtn, qqOpenJumpUserCenterBtn;
+    private RadioGroup netEnvRG;
+    private RadioButton testEnvRB, formalEnvRB;
+
+    private Button wxLoginBtn, wxLogoutBtn, wxUserCenterBtn;
+    private Button qqOpenLoginBtn, qqOpenLogoutBtn, qqOpenUserCenterBtn;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -44,65 +50,41 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private TextView bindPhoneNumberTextView;
 
     private Button bindLocationButton, queryLocationButton;
-    private TextView bindLocationTextView, queryLocationTextView;
+    private TextView bindLocationTextView;
 
-    private static final ELoginPlatform TEST_PLATFORM = ELoginPlatform.QQOpen;
+    private LinearLayout queryLocationLayout;
+    private TextView queryLocationTextView;
+
+    private LinearLayout wxTokenLayout, qqopenTokenLayout;
+    private TextView wxATTextView, wxRTTextView, qqopenATTextView;
+
+    private static final ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        wxLoginBtn = (Button)findViewById(R.id.wxlogin);
-        qqOpenLoginBtn = (Button)findViewById(R.id.qqopenlogin);
-        wxLogoutBtn = (Button)findViewById(R.id.wxlogout);
-        qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
-        atTxt = (TextView)findViewById(R.id.accesstokenid);
-        rtTxt = (TextView)findViewById(R.id.refreshtokenid);
-        atTxtQQOpen = (TextView)findViewById(R.id.accesstokenidqqopen);
-        wxJumpUserCenterBtn = (Button) findViewById(R.id.wxjumpusercenterbtn);
-        qqOpenJumpUserCenterBtn = (Button) findViewById(R.id.qqopenjumpusercenterbtn);
+        findViewsById();
 
-        getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
-        getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);
-        getCaptchaTextView = (TextView) findViewById(R.id.getcaptchatextview);
+        registerProxy();
 
-        bindPhoneNumberEditText = (EditText) findViewById(R.id.bindnumberedittext);
-        bindPhoneNumberButton = (Button) findViewById(R.id.bindnumberbutton);
-        bindPhoneNumberTextView = (TextView) findViewById(R.id.bindnumbertextview);
+        requestProxyOp();
 
-        bindLocationButton = (Button) findViewById(R.id.bindlocation);
-        queryLocationButton = (Button) findViewById(R.id.querylocation);
+        showTokenInfo();
 
-        bindLocationTextView = (TextView) findViewById(R.id.bindlocationtextview);
-        queryLocationTextView = (TextView) findViewById(R.id.querylocationtextview);
-
-        proxy = LoginProxy.getInstance(appidWx, appidQQOpen);
-
-        wxInfoManager = (WxInfoManager) proxy.getInfoManager(ELoginPlatform.WX);
-        qqOpenInfoManager = (QQOpenInfoManager) proxy.getInfoManager(ELoginPlatform.QQOpen);
-
-        proxy.setOwnActivity(this);
-        proxy.setAuthorizeListener(this);
-        proxy.setBindingListener(this);
-        //proxy.setLoginEnv(ELoginEnv.FORMAL);
-
-        if (proxy.isTokenExist(ELoginPlatform.WX, this)) {
-            proxy.requestTokenVerify(ELoginPlatform.WX, "productId", "dsn");
-        }
-        else {
-            wxLoginBtn.setEnabled(true);
-        }
-
-        if (proxy.isTokenExist(ELoginPlatform.QQOpen, this)) {
-            proxy.requestTokenVerify(ELoginPlatform.QQOpen, "productId", "dsn");
-        }
-        else {
-            qqOpenLoginBtn.setEnabled(true);
-        }
-
-        initWXViewInfo();
-        initQQOpenViewInfo();
+        netEnvRG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (testEnvRB.getId() == checkedId) {
+                    proxy.setLoginEnv(ELoginEnv.TEST);
+                }
+                else if (formalEnvRB.getId() == checkedId) {
+                    proxy.setLoginEnv(ELoginEnv.FORMAL);
+                }
+            }
+        });
 
         wxLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,14 +114,14 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
-        wxJumpUserCenterBtn.setOnClickListener(new View.OnClickListener() {
+        wxUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 proxy.toUserCenter(ELoginPlatform.WX);
             }
         });
 
-        qqOpenJumpUserCenterBtn.setOnClickListener(new View.OnClickListener() {
+        qqOpenUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 proxy.toUserCenter(ELoginPlatform.QQOpen);
@@ -199,21 +181,6 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         }
     }
 
-    private void initWXViewInfo() {
-        if (!"".equals(wxInfoManager.accessToken)) {
-            atTxt.setText("WX AccessToken = " + wxInfoManager.accessToken);
-        }
-        if (!"".equals(wxInfoManager.refreshToken)) {
-            rtTxt.setText("WX RefreshToken = " + wxInfoManager.refreshToken);
-        }
-    }
-
-    private void initQQOpenViewInfo() {
-        if (!"".equals(qqOpenInfoManager.accessToken)) {
-            atTxtQQOpen.setText("QQOpen AccessToken = " + qqOpenInfoManager.accessToken);
-        }
-    }
-
     @Override
     public void onSuccess(int type) {
         switch (type)
@@ -247,7 +214,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.QUERY_LOCATION_TYPE:
                 LocationInfo homeInfo = LocManager.getInstance().getLocation(ELocationType.HOME);
                 LocationInfo companyInfo = LocManager.getInstance().getLocation(ELocationType.COMPANY);
-                queryLocationTextView.setText("H:"+homeInfo.addr+"|"+homeInfo.name+"|"+homeInfo.latitube+"|"+homeInfo.longitube+",C:"+companyInfo.addr+"|"+companyInfo.name+"|"+companyInfo.latitube+"|"+companyInfo.longitube);
+                queryLocationLayout.setVisibility(View.VISIBLE);
+                queryLocationTextView.setText("HomeInfo:"+homeInfo.addr+"|"+homeInfo.name+"|"+homeInfo.latitube+"|"+homeInfo.longitube
+                        +"\nCompanyInfo:"+companyInfo.addr+"|"+companyInfo.name+"|"+companyInfo.latitube+"|"+companyInfo.longitube);
                 break;
         }
     }
@@ -280,8 +249,89 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 bindLocationTextView.setText("Bind Error");
                 break;
             case BindingListener.QUERY_LOCATION_TYPE:
+                queryLocationLayout.setVisibility(View.VISIBLE);
                 queryLocationTextView.setText("Query Error");
                 break;
+        }
+    }
+
+    private void findViewsById() {
+        netEnvRG = (RadioGroup) findViewById(R.id.netenvrg);
+        testEnvRB = (RadioButton) findViewById(R.id.testenvrb);
+        formalEnvRB = (RadioButton) findViewById(R.id.formalenvrb);
+
+        wxLoginBtn = (Button)findViewById(R.id.wxlogin);
+        wxLogoutBtn = (Button)findViewById(R.id.wxlogout);
+        wxUserCenterBtn = (Button) findViewById(R.id.wxjumpusercenterbtn);
+
+        qqOpenLoginBtn = (Button)findViewById(R.id.qqopenlogin);
+        qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
+        qqOpenUserCenterBtn = (Button) findViewById(R.id.qqopenjumpusercenterbtn);
+
+        getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
+        getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);
+        getCaptchaTextView = (TextView) findViewById(R.id.getcaptchatextview);
+
+        bindPhoneNumberEditText = (EditText) findViewById(R.id.bindnumberedittext);
+        bindPhoneNumberButton = (Button) findViewById(R.id.bindnumberbutton);
+        bindPhoneNumberTextView = (TextView) findViewById(R.id.bindnumbertextview);
+
+        bindLocationButton = (Button) findViewById(R.id.bindlocation);
+        queryLocationButton = (Button) findViewById(R.id.querylocation);
+        bindLocationTextView = (TextView) findViewById(R.id.bindlocationtextview);
+
+        queryLocationLayout = (LinearLayout) findViewById(R.id.querylocationlayout);
+        queryLocationTextView = (TextView) findViewById(R.id.querylocationtextview);
+
+        wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
+        wxATTextView = (TextView)findViewById(R.id.accesstokenid);
+        wxRTTextView = (TextView)findViewById(R.id.refreshtokenid);
+
+        qqopenTokenLayout = (LinearLayout) findViewById(R.id.qqopentokenlayout);
+        qqopenATTextView = (TextView)findViewById(R.id.accesstokenidqqopen);
+    }
+
+    private void registerProxy() {
+        proxy = LoginProxy.getInstance(appidWx, appidQQOpen);
+
+        wxInfoManager = (WxInfoManager) proxy.getInfoManager(ELoginPlatform.WX);
+        qqOpenInfoManager = (QQOpenInfoManager) proxy.getInfoManager(ELoginPlatform.QQOpen);
+
+        proxy.setOwnActivity(this);
+        proxy.setAuthorizeListener(this);
+        proxy.setBindingListener(this);
+    }
+
+    private void requestProxyOp() {
+        if (proxy.isTokenExist(ELoginPlatform.WX, this)) {
+            proxy.requestTokenVerify(ELoginPlatform.WX, "productId", "dsn");
+        }
+        else {
+            wxLoginBtn.setEnabled(true);
+        }
+
+        if (proxy.isTokenExist(ELoginPlatform.QQOpen, this)) {
+            proxy.requestTokenVerify(ELoginPlatform.QQOpen, "productId", "dsn");
+        }
+        else {
+            qqOpenLoginBtn.setEnabled(true);
+        }
+    }
+
+    private void showTokenInfo() {
+        if (!"".equals(wxInfoManager.accessToken)) {
+            wxTokenLayout.setVisibility(View.VISIBLE);
+            wxATTextView.setText("AccessToken:" + wxInfoManager.accessToken);
+        }
+
+        if (!"".equals(wxInfoManager.refreshToken)) {
+            wxTokenLayout.setVisibility(View.VISIBLE);
+            wxRTTextView.setText("RefreshToken:" + wxInfoManager.refreshToken);
+        }
+
+        if (!"".equals(qqOpenInfoManager.accessToken)) {
+            qqopenTokenLayout.setVisibility(View.VISIBLE);
+            qqopenATTextView.setText("AccessToken:" + qqOpenInfoManager.accessToken);
         }
     }
 }
