@@ -7,9 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8076327E1FA85C8A0025B763 /* TVSAccountSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8076327D1FA85C8A0025B763 /* TVSAccountSDK.framework */; };
-		8076327F1FA85C8A0025B763 /* TVSAccountSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8076327D1FA85C8A0025B763 /* TVSAccountSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8A73027F1F42A02E0026616E /* ca.cer in Resources */ = {isa = PBXBuildFile; fileRef = 8A73027E1F42A02E0026616E /* ca.cer */; };
+		807632841FA88E450025B763 /* TVSAccountSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 807632831FA88E450025B763 /* TVSAccountSDK.framework */; };
+		807632851FA88E450025B763 /* TVSAccountSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 807632831FA88E450025B763 /* TVSAccountSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8AD8081F1F3DB0E80040C9CF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD8081E1F3DB0E80040C9CF /* main.m */; };
 		8AD808221F3DB0E80040C9CF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD808211F3DB0E80040C9CF /* AppDelegate.m */; };
 		8AD808251F3DB0E80040C9CF /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD808241F3DB0E80040C9CF /* LoginController.m */; };
@@ -25,7 +24,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8076327F1FA85C8A0025B763 /* TVSAccountSDK.framework in Embed Frameworks */,
+				807632851FA88E450025B763 /* TVSAccountSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -33,9 +32,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8076327D1FA85C8A0025B763 /* TVSAccountSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TVSAccountSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A73027E1F42A02E0026616E /* ca.cer */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ca.cer; sourceTree = "<group>"; };
-		8AD8081A1F3DB0E80040C9CF /* TvsLoginDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TvsLoginDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		807632831FA88E450025B763 /* TVSAccountSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TVSAccountSDK.framework; sourceTree = "<group>"; };
+		8AD8081A1F3DB0E80040C9CF /* TVSAccountDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TVSAccountDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD8081E1F3DB0E80040C9CF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8AD808201F3DB0E80040C9CF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8AD808211F3DB0E80040C9CF /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -52,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8076327E1FA85C8A0025B763 /* TVSAccountSDK.framework in Frameworks */,
+				807632841FA88E450025B763 /* TVSAccountSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,8 +67,8 @@
 		8AD808111F3DB0E80040C9CF = {
 			isa = PBXGroup;
 			children = (
-				8076327D1FA85C8A0025B763 /* TVSAccountSDK.framework */,
-				8AD8081C1F3DB0E80040C9CF /* TvsLoginDemo */,
+				807632831FA88E450025B763 /* TVSAccountSDK.framework */,
+				8AD8081C1F3DB0E80040C9CF /* TVSAccountDemo */,
 				8AD8081B1F3DB0E80040C9CF /* Products */,
 				8A9738311F418BBD003BD45B /* Frameworks */,
 			);
@@ -79,12 +77,12 @@
 		8AD8081B1F3DB0E80040C9CF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8AD8081A1F3DB0E80040C9CF /* TvsLoginDemo.app */,
+				8AD8081A1F3DB0E80040C9CF /* TVSAccountDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8AD8081C1F3DB0E80040C9CF /* TvsLoginDemo */ = {
+		8AD8081C1F3DB0E80040C9CF /* TVSAccountDemo */ = {
 			isa = PBXGroup;
 			children = (
 				8AD808201F3DB0E80040C9CF /* AppDelegate.h */,
@@ -95,10 +93,9 @@
 				8AD808291F3DB0E80040C9CF /* Assets.xcassets */,
 				8AD8082B1F3DB0E80040C9CF /* LaunchScreen.storyboard */,
 				8AD8082E1F3DB0E80040C9CF /* Info.plist */,
-				8A73027E1F42A02E0026616E /* ca.cer */,
 				8AD8081D1F3DB0E80040C9CF /* Supporting Files */,
 			);
-			path = TvsLoginDemo;
+			path = TVSAccountDemo;
 			sourceTree = "<group>";
 		};
 		8AD8081D1F3DB0E80040C9CF /* Supporting Files */ = {
@@ -112,9 +109,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8AD808191F3DB0E80040C9CF /* TvsLoginDemo */ = {
+		8AD808191F3DB0E80040C9CF /* TVSAccountDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8AD808471F3DB0E80040C9CF /* Build configuration list for PBXNativeTarget "TvsLoginDemo" */;
+			buildConfigurationList = 8AD808471F3DB0E80040C9CF /* Build configuration list for PBXNativeTarget "TVSAccountDemo" */;
 			buildPhases = (
 				8AD808161F3DB0E80040C9CF /* Sources */,
 				8AD808171F3DB0E80040C9CF /* Frameworks */,
@@ -125,9 +122,9 @@
 			);
 			dependencies = (
 			);
-			name = TvsLoginDemo;
+			name = TVSAccountDemo;
 			productName = TvsLoginDemo;
-			productReference = 8AD8081A1F3DB0E80040C9CF /* TvsLoginDemo.app */;
+			productReference = 8AD8081A1F3DB0E80040C9CF /* TVSAccountDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -146,7 +143,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8AD808151F3DB0E80040C9CF /* Build configuration list for PBXProject "TvsLoginDemo" */;
+			buildConfigurationList = 8AD808151F3DB0E80040C9CF /* Build configuration list for PBXProject "TVSAccountDemo" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -159,7 +156,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8AD808191F3DB0E80040C9CF /* TvsLoginDemo */,
+				8AD808191F3DB0E80040C9CF /* TVSAccountDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -170,7 +167,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8AD8082D1F3DB0E80040C9CF /* LaunchScreen.storyboard in Resources */,
-				8A73027F1F42A02E0026616E /* ca.cer in Resources */,
 				8AD8082A1F3DB0E80040C9CF /* Assets.xcassets in Resources */,
 				8AD808281F3DB0E80040C9CF /* Main.storyboard in Resources */,
 			);
@@ -321,13 +317,16 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = TvsLoginDemo/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/TVSAccountDemo/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TvsLoginDemox;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TVSAccountDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -338,13 +337,16 @@
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 5TNCWX532Z;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = TvsLoginDemo/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/TVSAccountDemo/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TvsLoginDemox;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TVSAccountDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -352,7 +354,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8AD808151F3DB0E80040C9CF /* Build configuration list for PBXProject "TvsLoginDemo" */ = {
+		8AD808151F3DB0E80040C9CF /* Build configuration list for PBXProject "TVSAccountDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AD808451F3DB0E80040C9CF /* Debug */,
@@ -361,7 +363,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8AD808471F3DB0E80040C9CF /* Build configuration list for PBXNativeTarget "TvsLoginDemo" */ = {
+		8AD808471F3DB0E80040C9CF /* Build configuration list for PBXNativeTarget "TVSAccountDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AD808481F3DB0E80040C9CF /* Debug */,

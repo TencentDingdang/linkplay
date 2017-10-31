@@ -9,7 +9,6 @@
 #import "LoginController.h"
 
 #import <TVSAccountSDK/TVSAuth.h>
-#import <TVSAccountSDK/TVSAuthDelegate.h>
 #import <TVSAccountSDK/TVSUserCenter.h>
 #import <TVSAccountSDK/TVSEnvironment.h>
 

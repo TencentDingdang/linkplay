@@ -2,16 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ProductId</key>
-	<string>mProductId</string>
-	<key>DSN</key>
-	<string>mDSN</string>
-	<key>DeviceId</key>
-	<string>mDeviceId</string>
-	<key>DeviceType</key>
-	<string>mDeviceType</string>
-	<key>DeviceOem</key>
-	<string>mDeviceOem</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -49,6 +39,14 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>DSN</key>
+	<string>mDSN</string>
+	<key>DeviceId</key>
+	<string>mDeviceId</string>
+	<key>DeviceOem</key>
+	<string>mDeviceOem</string>
+	<key>DeviceType</key>
+	<string>mDeviceType</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>weixin</string>
@@ -71,6 +69,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>ProductId</key>
+	<string>mProductId</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
