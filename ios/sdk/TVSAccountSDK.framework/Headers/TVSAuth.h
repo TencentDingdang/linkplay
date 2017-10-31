@@ -6,8 +6,69 @@
 //  Copyright © 2017 tencent. All rights reserved.
 //
 
+/*!
+ * @file TVSAuth.h
+ */
 #import <Foundation/Foundation.h>
-#import "TVSAuthDelegate.h"
+
+/*!
+ * @brief 非法的 ClientId 常量
+ */
+static NSString* const INVALID_CLIENT_ID = @"invalid clientId";
+
+/*!
+ * @brief 非法的 RefreshToken 常量
+ */
+static NSString* const INVALID_REFRESH_TOKEN = @"refreshToken";
+
+
+
+/*!
+ * @typedef TVSAuthEvent
+ * @brief TVS 授权回调事件
+ */
+typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
+    /*!
+     * @brief 获取微信 Token
+     */
+    TVSAuthEventFetchWXToken,
+    
+    /*!
+     * @brief 刷新微信 Token
+     */
+    TVSAuthEventRefreshWXToken,
+    
+    /*!
+     * @brief 验证 QQ token
+     */
+    TVSAuthEventVerifyQQToken,
+    
+    /*!
+     * @brief 获取 TVSID
+     */
+    TVSAuthEventFetchId
+};
+
+
+
+/*!
+ * @protocol TVSAuthDelegate
+ * @brief TVS 授权回调协议
+ * @warning 必须实现本协议，否则无法收到相关事件回调
+ */
+@protocol TVSAuthDelegate <NSObject>
+
+@required
+/*!
+ * @brief 事件回调
+ * @param event 事件类型
+ * @param success 是否成功
+ */
+-(void)TVSAuthEvent:(TVSAuthEvent)event Success:(BOOL)success;
+
+@end
+
+
 
 /*!
  * @class TVSAccountInfo
@@ -62,29 +123,37 @@
 
 @end
 
+
+
 /*!
  * @class TVSUserInfo
  * @brief 用户信息
  */
 @interface TVSUserInfo : NSObject
+
 /*!
  * @brief id类型（0：微信，1：QQ）
  */
 @property(nonatomic,assign) NSInteger idType;
+
 /*!
  * @brief 昵称
  */
 @property(nonatomic,copy) NSString* nickName;
+
 /*!
  * @brief 头像
  */
 @property(nonatomic,copy) NSString* headImgUrl;
+
 /*!
  * @brief 性别（0：女，1：男）
  */
 @property(nonatomic,assign) NSInteger sex;
 
 @end
+
+
 
 /*!
  * @class TVSAuth
@@ -133,25 +202,25 @@
 
 /*!
  * @brief 微信登录
- * @warning 如果微信 token 不存在，则必须调用此方法，以获得 TVS ClientId
+ * @warning 如果微信 token 不存在，则必须调用此方法，以获得 TVS 后台返回的相关账户信息
  */
 -(void)loginWithWX;
 
 /*!
  * @brief QQ 登录
- * @warning 如果 QQ token 不存在，则必须调用此方法，以获得 TVS ClientId
+ * @warning 如果 QQ token 不存在，则必须调用此方法，以获得 TVS 后台返回的相关账户信息
  */
 -(void)loginWithQQ;
 
 /*!
  * @brief 刷新微信 Token
- * @warning 如果微信 token 存在，则必须调用此方法，以获得 TVS ClientId
+ * @warning 如果微信 token 存在，则必须调用此方法，以获得(更新) TVS 后台返回的相关账户信息
  */
 -(void)refreshWXToken;
 
 /*!
  * @brief 验证 QQ Token
- * @warning 如果 QQ token 存在，则必须调用此方法，以获得 TVS ClientId
+ * @warning 如果 QQ token 存在，则必须调用此方法，以获得(更新) TVS 后台返回的相关账户信息
  */
 -(void)verifyQQToken;
 
