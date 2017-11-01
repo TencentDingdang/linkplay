@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['userinfo',['userInfo',['../interface_t_v_s_auth.html#aaedf12bb2e803a47f31e9aa36c6fd352',1,'TVSAuth']]]
+  ['userinfo',['userInfo',['../interface_t_v_s_account_s_d_k.html#ac7706a4252dbeb52032fc4e61ed9499f',1,'TVSAccountSDK']]]
 ];

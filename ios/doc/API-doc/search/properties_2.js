@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['delegate',['delegate',['../interface_t_v_s_user_center.html#aafb80d3306bd7f5794991f3f5e5f415c',1,'TVSUserCenter']]]
+  ['expiretime',['expireTime',['../interface_t_v_s_account_info.html#a15949fea7557384c26faf69254140297',1,'TVSAccountInfo']]]
 ];

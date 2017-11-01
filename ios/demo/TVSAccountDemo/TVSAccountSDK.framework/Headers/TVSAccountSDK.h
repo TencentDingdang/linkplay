@@ -1,5 +1,5 @@
 //
-//  TVSAuth.h
+//  TVSAccountSDK.h
 //  TVSAccountSDK
 //
 //  Created by RincLiu on 21/08/2017.
@@ -7,9 +7,10 @@
 //
 
 /*!
- * @file TVSAuth.h
+ * @file TVSAccountSDK.h
  */
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 /*!
  * @brief 非法的 ClientId 常量
@@ -24,49 +25,50 @@ static NSString* const INVALID_REFRESH_TOKEN = @"refreshToken";
 
 
 /*!
- * @typedef TVSAuthEvent
- * @brief TVS 授权回调事件
+ * @typedef TVSEvent
+ * @brief TVS 事件
  */
-typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
+typedef NS_ENUM(NSUInteger, TVSAccountEvent) {
     /*!
-     * @brief 获取微信 Token
+     * @brief 获取微信 Token 事件
      */
-    TVSAuthEventFetchWXToken,
+    TVSAccountEventFetchWXToken,
     
     /*!
-     * @brief 刷新微信 Token
+     * @brief 刷新微信 Token 事件
      */
-    TVSAuthEventRefreshWXToken,
+    TVSAccountEventRefreshWXToken,
     
     /*!
-     * @brief 验证 QQ token
+     * @brief 验证 QQ token 事件
      */
-    TVSAuthEventVerifyQQToken,
+    TVSAccountEventVerifyQQToken,
     
     /*!
-     * @brief 获取 TVSID
+     * @brief 获取 TVSID 事件
      */
-    TVSAuthEventFetchId
+    TVSAccountEventFetchTvsId,
+    
+    /*!
+     * @brief 获取验证码事件
+     */
+    TVSAccountEventGetCaptcha,
+    
+    /*!
+     * @brief 绑定手机号事件
+     */
+    TVSAccountEventBindPhoneNumber,
+    
+    /*!
+     * @brief 绑定地址事件
+     */
+    TVSAccountEventBindLocation,
+    
+    /*!
+     * @brief 查询地址事件
+     */
+    TVSAccountEventQueryLocation
 };
-
-
-
-/*!
- * @protocol TVSAuthDelegate
- * @brief TVS 授权回调协议
- * @warning 必须实现本协议，否则无法收到相关事件回调
- */
-@protocol TVSAuthDelegate <NSObject>
-
-@required
-/*!
- * @brief 事件回调
- * @param event 事件类型
- * @param success 是否成功
- */
--(void)TVSAuthEvent:(TVSAuthEvent)event Success:(BOOL)success;
-
-@end
 
 
 
@@ -126,6 +128,36 @@ typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
 
 
 /*!
+ * @class TVSGeoLocation
+ * @brief 位置信息
+ */
+@interface TVSGeoLocation : NSObject <NSCoding>
+
+/*!
+ * @brief 名称
+ */
+@property (nonatomic,copy) NSString* name;
+
+/*!
+ * @brief 地址
+ */
+@property (nonatomic,copy) NSString* addr;
+
+/*!
+ * @brief 经度
+ */
+@property (nonatomic,copy) NSString* lng;
+
+/*!
+ * @brief 纬度
+ */
+@property (nonatomic,copy) NSString* lat;
+
+@end
+
+
+
+/*!
  * @class TVSUserInfo
  * @brief 用户信息
  */
@@ -151,15 +183,54 @@ typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
  */
 @property(nonatomic,assign) NSInteger sex;
 
+/*!
+ * @brief 手机号
+ */
+@property(nonatomic,copy) NSString* phoneNumber;
+
+/*!
+ * @brief 家庭地址
+ */
+@property(nonatomic,strong) TVSGeoLocation*  homeLocation;
+
+/*!
+ * @brief 公司地址
+ */
+@property(nonatomic,strong) TVSGeoLocation* companyLocation;
+
 @end
 
 
 
 /*!
- * @class TVSAuth
- * @brief TVS 授权 API
+ * @protocol TVSAccountDelegate
+ * @brief TVS 账户回调协议
+ * @warning 必须实现本协议，否则无法收到相关事件回调
  */
-@interface TVSAuth : NSObject
+@protocol TVSAccountDelegate <NSObject>
+
+@required
+/*!
+ * @brief 事件回调
+ * @param event 事件类型
+ * @param success 是否成功
+ */
+-(void)TVSAccountEvent:(TVSAccountEvent)event Success:(BOOL)success;
+
+@end
+
+
+
+/*!
+ * @class TVSAccountSDK
+ * @brief TVS 账号 sdk
+ */
+@interface TVSAccountSDK : NSObject
+
+/*!
+ * @brief 是否测试环境
+ */
+@property (nonatomic,assign) BOOL testEnvironment;
 
 /*!
  * @brief 获得 TVS 授权帮助类单例对象
@@ -183,10 +254,10 @@ typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
 
 /*!
  * @brief 设置 TVS 授权回调
- * @param authDelegate TVSAuthDelegate
+ * @param accountDelegate TVSAccountDelegate
  * @warning 如果要接收授权回调事件，必须实现此协议
  */
--(void)setAuthDelegate:(id<TVSAuthDelegate>)authDelegate;
+-(void)setAuthDelegate:(id<TVSAccountDelegate>)accountDelegate;
 
 /*!
  * @brief 检查微信 Token 是否存在
@@ -240,5 +311,40 @@ typedef NS_ENUM(NSUInteger, TVSAuthEvent) {
  * @brief 注销登录
  */
 -(void)logout;
+
+/*!
+ * @brief 打开用户中心页面
+ * @param viewController 起始ViewController
+ */
+-(void)enterUserCenterPageFromViewController:(UIViewController*)viewController;
+
+/*!
+ * @brief 获取用于绑定手机号的验证码
+ * @warning 必须确保已登录
+ * @param phoneNumber 手机号
+ */
+-(void)getCaptchaWithPhoneNumber:(NSString*)phoneNumber;
+
+/*!
+ * @brief 绑定手机号
+ * @param phoneNumber 手机号
+ * @param captcha 验证码
+ * @warning 必须确保已登录
+ */
+-(void)bindPhoneNumber:(NSString*)phoneNumber Captcha:(NSString*)captcha;
+
+/*!
+ * @brief 绑定地址
+ * @param homeLoc 家庭地址
+ * @param companyLoc 公司地址
+ * @warning 必须确保已登录
+ */
+-(void)bindHomeLocation:(TVSGeoLocation*)homeLoc CompanyLocation:(TVSGeoLocation*)companyLoc;
+
+/*!
+ * @brief 查询地址
+ * @warning 必须确保已登录
+ */
+-(void)queryLocation;
 
 @end

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['bindhomelocation_3acompanylocation_3a',['bindHomeLocation:CompanyLocation:',['../interface_t_v_s_user_center.html#a05e66ec59bd3b08ff3f5118e51fbcaaa',1,'TVSUserCenter']]],
-  ['bindphonenumber_3acaptcha_3a',['bindPhoneNumber:Captcha:',['../interface_t_v_s_user_center.html#af93fb550859c3a344b850d8272732fc7',1,'TVSUserCenter']]]
+  ['bindhomelocation_3acompanylocation_3a',['bindHomeLocation:CompanyLocation:',['../interface_t_v_s_account_s_d_k.html#a7cb61f2f527522185f3739e944617134',1,'TVSAccountSDK']]],
+  ['bindphonenumber_3acaptcha_3a',['bindPhoneNumber:Captcha:',['../interface_t_v_s_account_s_d_k.html#a9614cc8f8ffa0bd021bbb8a172bcfca4',1,'TVSAccountSDK']]]
 ];

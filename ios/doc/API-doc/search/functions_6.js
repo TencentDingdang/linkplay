@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['loginwithqq',['loginWithQQ',['../interface_t_v_s_auth.html#a01c9988d4d5315825d13987d399f8ead',1,'TVSAuth']]],
-  ['loginwithwx',['loginWithWX',['../interface_t_v_s_auth.html#acda0b9268ecff16c61a932a400d34f0a',1,'TVSAuth']]],
-  ['logout',['logout',['../interface_t_v_s_auth.html#ab5f1a4e85323e9308e71a0635a42e303',1,'TVSAuth']]]
+  ['loginwithqq',['loginWithQQ',['../interface_t_v_s_account_s_d_k.html#add89959819e50f3c6951e251041582bd',1,'TVSAccountSDK']]],
+  ['loginwithwx',['loginWithWX',['../interface_t_v_s_account_s_d_k.html#a417d2d5d03542591558baa2df63d8382',1,'TVSAccountSDK']]],
+  ['logout',['logout',['../interface_t_v_s_account_s_d_k.html#accf1443109f21edeb03b277c935d2cfa',1,'TVSAccountSDK']]]
 ];

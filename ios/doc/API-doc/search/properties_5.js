@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['idtype',['idType',['../interface_t_v_s_user_info.html#a83041bc8158b2f8ddd0c023794e6c581',1,'TVSUserInfo']]]
+  ['lat',['lat',['../interface_t_v_s_geo_location.html#aeeffa330cdd054f0f9e55044f8df704a',1,'TVSGeoLocation']]],
+  ['lng',['lng',['../interface_t_v_s_geo_location.html#a6041ad1a42b02faea494a215f95482b3',1,'TVSGeoLocation']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['isqqtokenexist',['isQQTokenExist',['../interface_t_v_s_auth.html#accdb314ee6ba1b97863699b31bdc590d',1,'TVSAuth']]],
-  ['iswxtokenexist',['isWXTokenExist',['../interface_t_v_s_auth.html#ad0f2f4d1b7cee76dc2fe2126628b50b7',1,'TVSAuth']]]
+  ['isqqtokenexist',['isQQTokenExist',['../interface_t_v_s_account_s_d_k.html#adb52157b9650635fb7c5567191919e66',1,'TVSAccountSDK']]],
+  ['iswxtokenexist',['isWXTokenExist',['../interface_t_v_s_account_s_d_k.html#a37ae7892b43d6076aaf3848c00361300',1,'TVSAccountSDK']]]
 ];
