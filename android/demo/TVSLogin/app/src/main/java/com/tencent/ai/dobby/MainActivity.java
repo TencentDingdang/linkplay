@@ -17,29 +17,38 @@ import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
+import com.tencent.ai.tvs.info.DeviceManager;
 import com.tencent.ai.tvs.info.LocManager;
 import com.tencent.ai.tvs.info.LocationInfo;
+import com.tencent.ai.tvs.info.PushInfoManager;
+import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
 import com.tencent.connect.common.Constants;
+
+import oicq.wlogin_sdk.request.WtloginHelper;
 
 public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener {
 
 
     private static final String appidWx = "wxd077c3460b51e427";
     private static final String appidQQOpen = "222222";
+    private static final long appidQQ = 1600001268L;
 
     private LoginProxy proxy;
+    private LoginProxy innerProxy;
 
     private WxInfoManager wxInfoManager;
     private QQOpenInfoManager qqOpenInfoManager;
+    private QQInfoManager qqInfoManager;
 
     private RadioGroup netEnvRG;
     private RadioButton testEnvRB, formalEnvRB;
 
     private Button wxLoginBtn, wxLogoutBtn, wxUserCenterBtn;
     private Button qqOpenLoginBtn, qqOpenLogoutBtn, qqOpenUserCenterBtn;
+    private Button qqLoginBtn, qqLogoutBtn, qqUserCenterBtn;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -54,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
     private LinearLayout queryLocationLayout;
     private TextView queryLocationTextView;
+
+    private Button devicebindButton;
+    private TextView devicebindTextView;
 
     private LinearLayout wxTokenLayout, qqopenTokenLayout;
     private TextView wxATTextView, wxRTTextView, qqopenATTextView;
@@ -100,6 +112,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
+        qqLoginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                innerProxy.requestLogin(ELoginPlatform.QQ, "productId", "dsn", MainActivity.this);
+            }
+        });
+
         wxLogoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +133,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
+        qqLogoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                innerProxy.clearToken(ELoginPlatform.QQ, MainActivity.this);
+            }
+        });
+
         wxUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +151,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 proxy.toUserCenter(ELoginPlatform.QQOpen);
+            }
+        });
+
+        qqUserCenterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                innerProxy.toUserCenter(ELoginPlatform.QQ);
             }
         });
 
@@ -151,11 +184,19 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 homeLocationInfo.name = "h_name";
                 homeLocationInfo.longitube = "h_longitube";
                 homeLocationInfo.latitube = "h_latitube";
+                homeLocationInfo.cabAddr = "h_caddr";
+                homeLocationInfo.cabName = "h_cname";
+                homeLocationInfo.cabLongitube = "h_clongitube";
+                homeLocationInfo.cabLatitube = "h_clatitube";
                 LocationInfo companyLocationInfo = locManager.getLocation(ELocationType.COMPANY);
                 companyLocationInfo.addr = "c_addr";
                 companyLocationInfo.name = "c_name";
                 companyLocationInfo.longitube = "c_longitube";
                 companyLocationInfo.latitube = "c_latitube";
+                companyLocationInfo.cabAddr = "c_caddr";
+                companyLocationInfo.cabName = "c_cname";
+                companyLocationInfo.cabLongitube = "c_clongitube";
+                companyLocationInfo.cabLatitube = "c_clatitube";
                 if (proxy.isLocationOpValid(TEST_PLATFORM)) {
                     proxy.requestBindLocation(TEST_PLATFORM, homeLocationInfo, companyLocationInfo);
                 }
@@ -170,14 +211,43 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 }
             }
         });
+
+        devicebindButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PushInfoManager pushInfoManager = PushInfoManager.getInstance();
+                DeviceManager deviceManager = DeviceManager.getInstance();
+                pushInfoManager.id = "pushid";
+                pushInfoManager.idExtra = "pushidextra";
+                pushInfoManager.idType = 0;
+                deviceManager.qua = "devqua";
+                deviceManager.bindTime = 10L;
+                deviceManager.guid = "devguid";
+                deviceManager.imei = "devimei";
+                deviceManager.license = "devlc";
+                deviceManager.mac = "devmac";
+                deviceManager.qimei = "devqimei";
+                deviceManager.enrollTime = 20L;
+                proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushInfoManager, deviceManager);
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.REQUEST_LOGIN) {
-            if (resultCode == -1) {
+            if (RESULT_OK == resultCode) {
                 proxy.handleQQOpenIntent(requestCode, resultCode, data);
             }
+            else if (RESULT_CANCELED == resultCode){
+            }
+        }
+        else if (requestCode == WtloginHelper.QuickLoginRequestCode.REQUEST_QQ_LOGIN
+                || requestCode == WtloginHelper.QuickLoginRequestCode.REQUEST_PT_LOGIN) {
+            if (RESULT_OK == resultCode) {
+                innerProxy.handleQQIntent(data);
+            }
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -216,7 +286,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 LocationInfo companyInfo = LocManager.getInstance().getLocation(ELocationType.COMPANY);
                 queryLocationLayout.setVisibility(View.VISIBLE);
                 queryLocationTextView.setText("HomeInfo:"+homeInfo.addr+"|"+homeInfo.name+"|"+homeInfo.latitube+"|"+homeInfo.longitube
-                        +"\nCompanyInfo:"+companyInfo.addr+"|"+companyInfo.name+"|"+companyInfo.latitube+"|"+companyInfo.longitube);
+                                                            + "|" +homeInfo.cabAddr+"|"+homeInfo.cabName+"|"+homeInfo.cabLatitube+"|"+homeInfo.cabLongitube
+                                                                +"\nCompanyInfo:"+companyInfo.addr+"|"+companyInfo.name+"|"+companyInfo.latitube+"|"+companyInfo.longitube
+                                                                    + "|" +companyInfo.cabAddr+"|"+companyInfo.cabName+"|"+companyInfo.cabLatitube+"|"+companyInfo.cabLongitube);
+                break;
+            case BindingListener.BIND_DEVICE_TYPE:
+                devicebindTextView.setText("Bind Success");
                 break;
         }
     }
@@ -252,6 +327,17 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 queryLocationLayout.setVisibility(View.VISIBLE);
                 queryLocationTextView.setText("Query Error");
                 break;
+            case BindingListener.BIND_DEVICE_TYPE:
+                devicebindTextView.setText("Bind Error");
+                break;
+        }
+    }
+
+    @Override
+    public void onCancel(int type) {
+        switch (type) {
+            case AuthorizeListener.AUTH_TYPE:
+                break;
         }
     }
 
@@ -268,6 +354,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
         qqOpenUserCenterBtn = (Button) findViewById(R.id.qqopenjumpusercenterbtn);
 
+        qqLoginBtn = (Button)findViewById(R.id.qqlogin);
+        qqLogoutBtn = (Button)findViewById(R.id.qqlogout);
+        qqUserCenterBtn = (Button)findViewById(R.id.qqumpusercenterbtn);
+
         getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
         getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);
         getCaptchaTextView = (TextView) findViewById(R.id.getcaptchatextview);
@@ -283,6 +373,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         queryLocationLayout = (LinearLayout) findViewById(R.id.querylocationlayout);
         queryLocationTextView = (TextView) findViewById(R.id.querylocationtextview);
 
+        devicebindButton = (Button) findViewById(R.id.devicebindbtn);
+        devicebindTextView = (TextView) findViewById(R.id.devicebindbtntextview);
+
         wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
         wxATTextView = (TextView)findViewById(R.id.accesstokenid);
         wxRTTextView = (TextView)findViewById(R.id.refreshtokenid);
@@ -293,13 +386,19 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
     private void registerProxy() {
         proxy = LoginProxy.getInstance(appidWx, appidQQOpen);
+        innerProxy = LoginProxy.getInstance(appidWx, appidQQ);
 
         wxInfoManager = (WxInfoManager) proxy.getInfoManager(ELoginPlatform.WX);
         qqOpenInfoManager = (QQOpenInfoManager) proxy.getInfoManager(ELoginPlatform.QQOpen);
+        qqInfoManager = (QQInfoManager) innerProxy.getInfoManager(ELoginPlatform.QQ);
 
         proxy.setOwnActivity(this);
         proxy.setAuthorizeListener(this);
         proxy.setBindingListener(this);
+
+        innerProxy.setOwnActivity(this);
+        innerProxy.setAuthorizeListener(this);
+        innerProxy.setBindingListener(this);
     }
 
     private void requestProxyOp() {
@@ -315,6 +414,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         }
         else {
             qqOpenLoginBtn.setEnabled(true);
+        }
+
+        if (innerProxy.isTokenExist(ELoginPlatform.QQ, this)) {
+            innerProxy.requestTokenVerify(ELoginPlatform.QQ, "productId", "dsn");
+        }
+        else {
+            qqLoginBtn.setEnabled(true);
         }
     }
 

@@ -82,11 +82,42 @@
             android:text="UserCenterH5"/>
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/getcaptchalayout"
+        android:id="@+id/qqlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/qqopenlayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QQ"/>
+        <Button
+            android:id="@+id/qqlogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Login"
+            />
+        <Button
+            android:id="@+id/qqlogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Logout"
+            />
+        <Button
+            android:id="@+id/qqumpusercenterbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="UserCenterH5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/getcaptchalayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/qqlayout">
         <EditText
             android:id="@+id/getcaptchaedittext"
             android:layout_width="wrap_content"
@@ -170,10 +201,27 @@
             />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/wxtokenlayout"
+        android:id="@+id/devicebindlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/querylocationlayout"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/devicebindbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Bind Device"/>
+        <TextView
+            android:id="@+id/devicebindbtntextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/wxtokenlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/devicebindlayout"
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
