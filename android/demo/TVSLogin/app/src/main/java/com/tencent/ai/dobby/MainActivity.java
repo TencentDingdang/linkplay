@@ -17,6 +17,7 @@ import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
+import com.tencent.ai.tvs.info.BindManager;
 import com.tencent.ai.tvs.info.DeviceManager;
 import com.tencent.ai.tvs.info.LocManager;
 import com.tencent.ai.tvs.info.LocationInfo;
@@ -25,11 +26,12 @@ import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
+import com.tencent.aisdk.udp.UDPClient;
 import com.tencent.connect.common.Constants;
 
 import oicq.wlogin_sdk.request.WtloginHelper;
 
-public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener {
+public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener, UDPClient.Callback {
 
 
     private static final String appidWx = "wxd077c3460b51e427";
@@ -37,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private static final long appidQQ = 1600001268L;
 
     private LoginProxy proxy;
+
+    // ????
     private LoginProxy innerProxy;
 
     private WxInfoManager wxInfoManager;
@@ -67,8 +71,16 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button devicebindButton;
     private TextView devicebindTextView;
 
-    private LinearLayout wxTokenLayout, qqopenTokenLayout;
-    private TextView wxATTextView, wxRTTextView, qqopenATTextView;
+    private Button devicescanButton;
+    private TextView devicescanTextView;
+
+    private Button getMemberStatusButton;
+    private TextView getMemberStatusTextView;
+
+    private LinearLayout wxTokenLayout, qqopenTokenLayout, qqTokenLayout;
+    private TextView wxATTextView, wxRTTextView, qqopenATTextView, qqATTextView;
+
+    private DeviceManager deviceManager;
 
     private static final ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
 
@@ -143,21 +155,21 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         wxUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.toUserCenter(ELoginPlatform.WX);
+                proxy.toUserCenter(ELoginPlatform.WX, deviceManager);
             }
         });
 
         qqOpenUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.toUserCenter(ELoginPlatform.QQOpen);
+                proxy.toUserCenter(ELoginPlatform.QQOpen, deviceManager);
             }
         });
 
         qqUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                innerProxy.toUserCenter(ELoginPlatform.QQ);
+                innerProxy.toUserCenter(ELoginPlatform.QQ, deviceManager);
             }
         });
 
@@ -216,19 +228,33 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 PushInfoManager pushInfoManager = PushInfoManager.getInstance();
-                DeviceManager deviceManager = DeviceManager.getInstance();
+                DeviceManager testDevManager = new DeviceManager();
                 pushInfoManager.id = "pushid";
                 pushInfoManager.idExtra = "pushidextra";
                 pushInfoManager.idType = 0;
-                deviceManager.qua = "devqua";
-                deviceManager.bindTime = 10L;
-                deviceManager.guid = "devguid";
-                deviceManager.imei = "devimei";
-                deviceManager.license = "devlc";
-                deviceManager.mac = "devmac";
-                deviceManager.qimei = "devqimei";
-                deviceManager.enrollTime = 20L;
-                proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushInfoManager, deviceManager);
+                testDevManager.qua = "devqua";
+                testDevManager.bindTime = 10L;
+                testDevManager.guid = "devguid";
+                testDevManager.imei = "devimei";
+                testDevManager.license = "devlc";
+                testDevManager.mac = "devmac";
+                testDevManager.qimei = "devqimei";
+                testDevManager.enrollTime = 20L;
+                proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushInfoManager, testDevManager);
+            }
+        });
+
+        devicescanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UDPClient.start(MainActivity.this);
+            }
+        });
+
+        getMemberStatusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proxy.getMemberStatus(TEST_PLATFORM, deviceManager);
             }
         });
     }
@@ -266,8 +292,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case AuthorizeListener.QQOPEN_TVSIDRECV_TYPE:
                 qqOpenLoginBtn.setEnabled(false);
                 break;
+            case AuthorizeListener.QQ_TVSIDRECV_TYPE:
+                qqLoginBtn.setEnabled(false);
+                break;
             case AuthorizeListener.TOKENVERIFY_TYPE:
                 qqOpenLoginBtn.setEnabled(false);
+                qqLoginBtn.setEnabled(false);
                 break;
             case AuthorizeListener.USERINFORECV_TYPE:
                 UserInfoManager mgr = UserInfoManager.getInstance();
@@ -293,6 +323,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.BIND_DEVICE_TYPE:
                 devicebindTextView.setText("Bind Success");
                 break;
+            case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
+                getMemberStatusTextView.setText("Get Member Status Success");
+                break;
         }
     }
 
@@ -311,8 +344,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case AuthorizeListener.QQOPEN_TVSIDRECV_TYPE:
                 qqOpenLoginBtn.setEnabled(true);
                 break;
+            case AuthorizeListener.QQ_TVSIDRECV_TYPE:
+                qqLoginBtn.setEnabled(true);
+                break;
             case AuthorizeListener.TOKENVERIFY_TYPE:
                 qqOpenLoginBtn.setEnabled(true);
+                qqLoginBtn.setEnabled(true);
                 break;
             case BindingListener.GET_CAPTCHA_TYPE:
                 getCaptchaTextView.setText("Captcha Send Error");
@@ -330,6 +367,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.BIND_DEVICE_TYPE:
                 devicebindTextView.setText("Bind Error");
                 break;
+            case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
+                getMemberStatusTextView.setText("Get Member Status Error");
+                break;
         }
     }
 
@@ -338,6 +378,30 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         switch (type) {
             case AuthorizeListener.AUTH_TYPE:
                 break;
+        }
+    }
+
+    @Override
+    public void onUDPResponse(String ip, int req, String data) {
+        if (req == UDPClient.UDP_CLIENT_STARTED) {
+            UDPClient.requestAll(UDPClient.REQ_DEVICE_INFO);
+        }
+        else if (req == UDPClient.REQ_DEVICE_INFO) {
+            deviceManager = new DeviceManager(ip, data);
+            devicescanTextView.setText(deviceManager.toString());
+        }
+        else if (req == UDPClient.SET_ACCOUNT_INFO) {
+            BindManager.getInstance().bind(ip, "", data, new BindManager.Callback() {
+                @Override
+                public void onSuccess(String msg) {
+
+                }
+
+                @Override
+                public void onFail(String msg) {
+
+                }
+            });
         }
     }
 
@@ -376,12 +440,21 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         devicebindButton = (Button) findViewById(R.id.devicebindbtn);
         devicebindTextView = (TextView) findViewById(R.id.devicebindbtntextview);
 
+        devicescanButton = (Button) findViewById(R.id.devicescanbtn);
+        devicescanTextView = (TextView) findViewById(R.id.devicescantext);
+
+        getMemberStatusButton = (Button) findViewById(R.id.getmemberstatusbtn);
+        getMemberStatusTextView = (TextView) findViewById(R.id.getmemberstatustext);
+
         wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
         wxATTextView = (TextView)findViewById(R.id.accesstokenid);
         wxRTTextView = (TextView)findViewById(R.id.refreshtokenid);
 
         qqopenTokenLayout = (LinearLayout) findViewById(R.id.qqopentokenlayout);
         qqopenATTextView = (TextView)findViewById(R.id.accesstokenidqqopen);
+
+        qqTokenLayout = (LinearLayout) findViewById(R.id.qqtokenlayout);
+        qqATTextView = (TextView) findViewById(R.id.accesstokenidqq);
     }
 
     private void registerProxy() {
@@ -438,6 +511,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         if (!"".equals(qqOpenInfoManager.accessToken)) {
             qqopenTokenLayout.setVisibility(View.VISIBLE);
             qqopenATTextView.setText("AccessToken:" + qqOpenInfoManager.accessToken);
+        }
+
+        if (!"".equals(qqInfoManager.accessToken)) {
+            qqTokenLayout.setVisibility(View.VISIBLE);
+            qqATTextView.setText("AccessToken: " + qqInfoManager.accessToken);
         }
     }
 }

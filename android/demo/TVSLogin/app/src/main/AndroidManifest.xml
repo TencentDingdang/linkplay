@@ -45,18 +45,6 @@
                 <data android:scheme="222222" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.tencent.connect.common.AssistActivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="behind"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity
-            android:name="com.tencent.ai.tvs.ui.TVSAssistActivity"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
-        <activity
-            android:name="oicq.wlogin_sdk.quicklogin.QuickLoginWebViewActivity"
-            />
     </application>
 
 </manifest>

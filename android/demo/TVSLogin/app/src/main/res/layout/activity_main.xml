@@ -218,10 +218,46 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/devicescanlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/devicebindlayout">
+        <Button
+            android:id="@+id/devicescanbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Scan Device"/>
+        <TextView
+            android:id="@+id/devicescantext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/getmemberstatuslayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/devicescanlayout">
+        <Button
+            android:id="@+id/getmemberstatusbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Get Member Status"/>
+        <TextView
+            android:id="@+id/getmemberstatustext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/wxtokenlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/devicebindlayout"
+        android:layout_below="@id/getmemberstatuslayout"
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
@@ -254,6 +290,24 @@
             android:text="QQOpen Token Info"/>
         <TextView
             android:id="@+id/accesstokenidqqopen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/qqtokenlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/qqopentokenlayout"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="QQ Token Info"/>
+        <TextView
+            android:id="@+id/accesstokenidqq"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             />
