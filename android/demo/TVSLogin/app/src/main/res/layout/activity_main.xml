@@ -201,10 +201,28 @@
             />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/devicescanlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/querylocationlayout">
+        <Button
+            android:id="@+id/devicescanbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Scan Device"/>
+        <TextView
+            android:id="@+id/devicescantext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"/>
+    </LinearLayout>
+    <LinearLayout
         android:id="@+id/devicebindlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/querylocationlayout"
+        android:layout_below="@id/devicescanlayout"
         android:orientation="horizontal">
         <Button
             android:id="@+id/devicebindbtn"
@@ -218,29 +236,11 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/devicescanlayout"
+        android:id="@+id/getmemberstatuslayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/devicebindlayout">
-        <Button
-            android:id="@+id/devicescanbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            android:text="Scan Device"/>
-        <TextView
-            android:id="@+id/devicescantext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/getmemberstatuslayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_below="@id/devicescanlayout">
         <Button
             android:id="@+id/getmemberstatusbtn"
             android:layout_width="wrap_content"
@@ -252,7 +252,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
     <LinearLayout
         android:id="@+id/wxtokenlayout"
         android:layout_width="match_parent"
@@ -269,11 +268,13 @@
             android:id="@+id/accesstokenid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="8sp"
             />
         <TextView
             android:id="@+id/refreshtokenid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="8sp"
             />
     </LinearLayout>
     <LinearLayout
@@ -292,6 +293,7 @@
             android:id="@+id/accesstokenidqqopen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="8sp"
             />
     </LinearLayout>
     <LinearLayout
@@ -310,6 +312,7 @@
             android:id="@+id/accesstokenidqq"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="8sp"
             />
     </LinearLayout>
 </RelativeLayout>
