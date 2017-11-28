@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tencent.ai.tvs.AuthorizeListener;
 import com.tencent.ai.tvs.BindingListener;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
 
     private static final String appidWx = "wxd077c3460b51e427";
-    private static final String appidQQOpen = "222222";
+    private static final String appidQQOpen = "101429537";
     private static final long appidQQ = 1600001268L;
 
     private LoginProxy proxy;
@@ -115,6 +116,14 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         wxLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!proxy.isWXAppInstalled()) {
+                    Toast.makeText(MainActivity.this, "WX Not Installed", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!proxy.isWXAppSupportAPI()) {
+                    Toast.makeText(MainActivity.this, "WX Not SupportAPI", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 proxy.requestLogin(ELoginPlatform.WX, "productId", "dsn", MainActivity.this);
             }
         });
@@ -256,7 +265,19 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         getMemberStatusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.getMemberStatus(TEST_PLATFORM, deviceManager);
+                DeviceManager testDevManager = new DeviceManager();
+                testDevManager.qua = "devqua";
+                testDevManager.bindTime = 10L;
+                testDevManager.guid = "devguid";
+                testDevManager.imei = "devimei";
+                testDevManager.license = "devlc";
+                testDevManager.mac = "devmac";
+                testDevManager.qimei = "devqimei";
+                testDevManager.enrollTime = 20L;
+                testDevManager.manufacturer = "GGMM";
+                testDevManager.deviceName = "devname";
+
+                proxy.getMemberStatus(TEST_PLATFORM, testDevManager);
             }
         });
     }
@@ -322,7 +343,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                                                                 +"\nCompanyInfo:"+companyInfo.addr+"|"+companyInfo.name+"|"+companyInfo.latitube+"|"+companyInfo.longitube
                                                                     + "|" +companyInfo.cabAddr+"|"+companyInfo.cabName+"|"+companyInfo.cabLatitube+"|"+companyInfo.cabLongitube);
                 break;
-            case BindingListener.BIND_DEVICE_TYPE:
+            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
                 devicebindTextView.setText("Bind Success");
                 break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
@@ -366,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 queryLocationLayout.setVisibility(View.VISIBLE);
                 queryLocationTextView.setText("Query Error");
                 break;
-            case BindingListener.BIND_DEVICE_TYPE:
+            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
                 devicebindTextView.setText("Bind Error");
                 break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
