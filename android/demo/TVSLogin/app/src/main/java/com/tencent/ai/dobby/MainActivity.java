@@ -20,6 +20,7 @@ import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
+import com.tencent.ai.tvs.env.EUserAttrType;
 import com.tencent.ai.tvs.info.BindManager;
 import com.tencent.ai.tvs.info.DeviceManager;
 import com.tencent.ai.tvs.info.LocManager;
@@ -166,21 +167,21 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         wxUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.toUserCenter(ELoginPlatform.WX, deviceManager);
+                proxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.WX, deviceManager);
             }
         });
 
         qqOpenUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.toUserCenter(ELoginPlatform.QQOpen, deviceManager);
+                proxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.QQOpen, deviceManager);
             }
         });
 
         qqUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                innerProxy.toUserCenter(ELoginPlatform.QQ, deviceManager);
+                innerProxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.QQ, deviceManager);
             }
         });
 
@@ -274,7 +275,6 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 testDevManager.mac = "devmac";
                 testDevManager.qimei = "devqimei";
                 testDevManager.enrollTime = 20L;
-                testDevManager.manufacturer = "GGMM";
                 testDevManager.deviceName = "devname";
 
                 proxy.getMemberStatus(TEST_PLATFORM, testDevManager);
