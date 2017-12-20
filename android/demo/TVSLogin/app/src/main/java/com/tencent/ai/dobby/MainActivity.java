@@ -54,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private RadioGroup netEnvRG;
     private RadioButton testEnvRB, formalEnvRB;
 
-    private Button wxLoginBtn, wxLogoutBtn, wxUserCenterBtn;
-    private Button qqOpenLoginBtn, qqOpenLogoutBtn, qqOpenUserCenterBtn;
-    private Button qqLoginBtn, qqLogoutBtn, qqUserCenterBtn;
+    private Button wxLoginBtn, wxLogoutBtn;
+    private Button qqOpenLoginBtn, qqOpenLogoutBtn;
+    private Button qqLoginBtn, qqLogoutBtn;
+    private Button toUserCenterBtn;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
     private DeviceManager deviceManager;
 
-    private static final ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
+    private static ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,9 +108,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (testEnvRB.getId() == checkedId) {
                     proxy.setLoginEnv(ELoginEnv.TEST);
+                    proxy.setUserCenterEnv(ELoginEnv.TEST);
                 }
                 else if (formalEnvRB.getId() == checkedId) {
                     proxy.setLoginEnv(ELoginEnv.FORMAL);
+                    proxy.setUserCenterEnv(ELoginEnv.FORMAL);
                 }
             }
         });
@@ -125,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     Toast.makeText(MainActivity.this, "WX Not SupportAPI", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                TEST_PLATFORM = ELoginPlatform.WX;
                 proxy.requestLogin(ELoginPlatform.WX, "productId", "dsn", MainActivity.this);
             }
         });
@@ -132,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         qqOpenLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                TEST_PLATFORM = ELoginPlatform.QQOpen;
                 proxy.requestLogin(ELoginPlatform.QQOpen, "productId", "dsn", MainActivity.this);
             }
         });
@@ -164,24 +169,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
-        wxUserCenterBtn.setOnClickListener(new View.OnClickListener() {
+        toUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.WX, deviceManager);
-            }
-        });
-
-        qqOpenUserCenterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                proxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.QQOpen, deviceManager);
-            }
-        });
-
-        qqUserCenterBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                innerProxy.toUserCenter(EUserAttrType.HOMEPAGE, ELoginPlatform.QQ, deviceManager);
+                proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager);
             }
         });
 
@@ -244,15 +235,25 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 pushInfoManager.id = "pushid";
                 pushInfoManager.idExtra = "pushidextra";
                 pushInfoManager.idType = 0;
+
                 testDevManager.qua = "devqua";
-                testDevManager.bindTime = 10L;
-                testDevManager.guid = "devguid";
                 testDevManager.imei = "devimei";
                 testDevManager.license = "devlc";
                 testDevManager.mac = "devmac";
                 testDevManager.qimei = "devqimei";
                 testDevManager.enrollTime = 20L;
+                testDevManager.bindTime = 10L;
+                testDevManager.guid = "devguid";
+                testDevManager.deviceName = "devname";
+                testDevManager.deviceOEMUrl = "devOEMUrl";
+                testDevManager.deviceOEM = "devOEM";
+                testDevManager.deviceType = "devType";
+                testDevManager.deviceSerial = "devSerial";
+                testDevManager.deviceId = "devId";
+                testDevManager.deviceMark = "devMark";
+
                 proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushInfoManager, testDevManager);
+//                proxy.requestSetPushMapInfo(TEST_PLATFORM, pushInfoManager, testDevManager);
             }
         });
 
@@ -260,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 UDPClient.start(MainActivity.this);
+//                proxy.requestGetPushDeviceInfo(TEST_PLATFORM);
             }
         });
 
@@ -268,18 +270,30 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             public void onClick(View v) {
                 DeviceManager testDevManager = new DeviceManager();
                 testDevManager.qua = "devqua";
-                testDevManager.bindTime = 10L;
-                testDevManager.guid = "devguid";
                 testDevManager.imei = "devimei";
                 testDevManager.license = "devlc";
-                testDevManager.mac = "devmac";
+                testDevManager.mac = "a0:b1:c2:d3:e4:f6";
                 testDevManager.qimei = "devqimei";
                 testDevManager.enrollTime = 20L;
+                testDevManager.bindTime = 10L;
+                testDevManager.guid = "devguid";
                 testDevManager.deviceName = "devname";
+                testDevManager.deviceOEMUrl = "devOEMUrl";
+                testDevManager.deviceOEM = "Tencent";
+                testDevManager.deviceType = "SPEAKER";
+                testDevManager.deviceSerial = "devSerial";
+                testDevManager.deviceId = "devId";
+                testDevManager.deviceMark = "devMark";
 
                 proxy.getMemberStatus(TEST_PLATFORM, testDevManager);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        proxy.handleQQOpenUserInfo();
     }
 
     @Override
@@ -325,6 +339,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case AuthorizeListener.USERINFORECV_TYPE:
                 UserInfoManager mgr = UserInfoManager.getInstance();
                 break;
+            case AuthorizeListener.WX_VALID_LOGIN_TYPE:
+                break;
+            case AuthorizeListener.QQOPEN_VALID_LOGIN_TYPE:
+                break;
             case BindingListener.GET_CAPTCHA_TYPE:
                 getCaptchaTextView.setText("Captcha Send Success");
                 break;
@@ -344,6 +362,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                                                                     + "|" +companyInfo.cabAddr+"|"+companyInfo.cabName+"|"+companyInfo.cabLatitube+"|"+companyInfo.cabLongitube);
                 break;
             case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
+                devicebindTextView.setText("Bind Success Ex");
+                break;
+            case BindingListener.SET_PUSH_MAP_INFO_TYPE:
                 devicebindTextView.setText("Bind Success");
                 break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
@@ -374,6 +395,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 qqOpenLoginBtn.setEnabled(true);
                 qqLoginBtn.setEnabled(true);
                 break;
+            case AuthorizeListener.WX_VALID_LOGIN_TYPE:
+                Toast.makeText(MainActivity.this, "WX Login InValid", Toast.LENGTH_SHORT).show();
+                break;
+            case AuthorizeListener.QQOPEN_VALID_LOGIN_TYPE:
+                Toast.makeText(MainActivity.this, "QQOpen Login InValid", Toast.LENGTH_SHORT).show();
+                break;
             case BindingListener.GET_CAPTCHA_TYPE:
                 getCaptchaTextView.setText("Captcha Send Error");
                 break;
@@ -388,6 +415,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 queryLocationTextView.setText("Query Error");
                 break;
             case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
+                devicebindTextView.setText("Bind Error Ex");
+                break;
+            case BindingListener.SET_PUSH_MAP_INFO_TYPE:
                 devicebindTextView.setText("Bind Error");
                 break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
@@ -440,15 +470,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
         wxLoginBtn = (Button)findViewById(R.id.wxlogin);
         wxLogoutBtn = (Button)findViewById(R.id.wxlogout);
-        wxUserCenterBtn = (Button) findViewById(R.id.wxjumpusercenterbtn);
+        toUserCenterBtn = (Button) findViewById(R.id.tousercenterbtn);
 
         qqOpenLoginBtn = (Button)findViewById(R.id.qqopenlogin);
         qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
-        qqOpenUserCenterBtn = (Button) findViewById(R.id.qqopenjumpusercenterbtn);
 
         qqLoginBtn = (Button)findViewById(R.id.qqlogin);
         qqLogoutBtn = (Button)findViewById(R.id.qqlogout);
-        qqUserCenterBtn = (Button)findViewById(R.id.qqumpusercenterbtn);
 
         getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
         getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);

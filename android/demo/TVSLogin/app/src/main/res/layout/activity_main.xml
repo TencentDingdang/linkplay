@@ -44,11 +44,11 @@
             android:text="Logout"
             />
         <Button
-            android:id="@+id/wxjumpusercenterbtn"
+            android:id="@+id/tousercenterbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="UserCenterH5"/>
+            android:text="ToUserCenter"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/qqopenlayout"
@@ -74,12 +74,6 @@
             android:textAllCaps="false"
             android:text="Logout"
             />
-        <Button
-            android:id="@+id/qqopenjumpusercenterbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            android:text="UserCenterH5"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/qqlayout"
@@ -105,12 +99,6 @@
             android:textAllCaps="false"
             android:text="Logout"
             />
-        <Button
-            android:id="@+id/qqumpusercenterbtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAllCaps="false"
-            android:text="UserCenterH5"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/getcaptchalayout"

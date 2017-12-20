@@ -30,12 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.tencent.ai.dobby.wxapi.WXEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTask">
-        </activity>
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:noHistory="true"
