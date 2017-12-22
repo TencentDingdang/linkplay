@@ -30,6 +30,7 @@ import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
+import com.tencent.ai.tvs.ui.UserCenterStateListener;
 import com.tencent.aisdk.udp.UDPClient;
 import com.tencent.connect.common.Constants;
 
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button wxLoginBtn, wxLogoutBtn;
     private Button qqOpenLoginBtn, qqOpenLogoutBtn;
     private Button qqLoginBtn, qqLogoutBtn;
-    private Button toUserCenterBtn;
+    private Button toUserCenterBtn, toUserCenterWithCallbackBtn;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -173,6 +174,36 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager);
+            }
+        });
+
+        toUserCenterWithCallbackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager, new UserCenterStateListener() {
+                    @Override
+                    public void onSuccess(int type) {
+                        switch (type) {
+                            case UserCenterStateListener.LOGIN_TYPE:
+                                break;
+                            case UserCenterStateListener.LOGOUT_TYPE:
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onError(int type) {
+                        switch (type) {
+                            case UserCenterStateListener.LOGIN_TYPE:
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onCancel(int type) {
+
+                    }
+                });
             }
         });
 
@@ -471,6 +502,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         wxLoginBtn = (Button)findViewById(R.id.wxlogin);
         wxLogoutBtn = (Button)findViewById(R.id.wxlogout);
         toUserCenterBtn = (Button) findViewById(R.id.tousercenterbtn);
+        toUserCenterWithCallbackBtn = (Button) findViewById(R.id.tousercenterwithcbbtn);
 
         qqOpenLoginBtn = (Button)findViewById(R.id.qqopenlogin);
         qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
