@@ -1,8 +1,6 @@
 package com.tencent.ai.dobby;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,32 +14,39 @@ import android.widget.Toast;
 
 import com.tencent.ai.tvs.AuthorizeListener;
 import com.tencent.ai.tvs.BindingListener;
+import com.tencent.ai.tvs.ConstantValues;
 import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
 import com.tencent.ai.tvs.env.EUserAttrType;
-import com.tencent.ai.tvs.info.BindManager;
 import com.tencent.ai.tvs.info.DeviceManager;
 import com.tencent.ai.tvs.info.LocManager;
 import com.tencent.ai.tvs.info.LocationInfo;
+import com.tencent.ai.tvs.info.ProductManager;
 import com.tencent.ai.tvs.info.PushInfoManager;
 import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
 import com.tencent.ai.tvs.ui.UserCenterStateListener;
-import com.tencent.aisdk.udp.UDPClient;
 import com.tencent.connect.common.Constants;
 
+import SmartService.EAIPushIdType;
 import oicq.wlogin_sdk.request.WtloginHelper;
 
-public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener, UDPClient.Callback {
+public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener {
 
 
-    private static final String appidWx = "wxd077c3460b51e427";
-    private static final String appidQQOpen = "101429537";
-    private static final long appidQQ = 1600001268L;
+    private static final String TEST_APPID_WX = "wxd077c3460b51e427";
+    private static final String TEST_APPID_QQOPEN = "1105886239";
+    private static final long TEST_APPID_QQ = 1600001268L;
+
+    private static final String TEST_PRODUCTID = "7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da:9cb1fbf4c54442cc80c9aed8cb3c25b6";
+    private static final String TEST_DSN = "FF31F085A55DD019C8575CFB";
+
+    private static final String TEST_DEVOEM = "GGMM";
+    private static final String TEST_DEVTYPE = "SPEAKER";
 
     private LoginProxy proxy;
 
@@ -77,11 +82,16 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button devicebindButton;
     private TextView devicebindTextView;
 
-    private Button devicescanButton;
-    private TextView devicescanTextView;
+    private Button deviceunbindButton;
+    private TextView deviceunbindTextView;
+
+    private Button getBindDevicesButton;
+    private TextView getBindDevicesTextView;
 
     private Button getMemberStatusButton;
     private TextView getMemberStatusTextView;
+
+    private Button toTVSButton;
 
     private LinearLayout wxTokenLayout, qqopenTokenLayout, qqTokenLayout;
     private TextView wxATTextView, wxRTTextView, qqopenATTextView, qqATTextView;
@@ -173,6 +183,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toUserCenterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                deviceManager = new DeviceManager();
+                deviceManager.productId = TEST_PRODUCTID;
+                deviceManager.dsn = TEST_DSN;
+                deviceManager.deviceOEM = TEST_DEVOEM;
+                deviceManager.deviceType = TEST_DEVTYPE;
                 proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager);
             }
         });
@@ -180,13 +195,20 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toUserCenterWithCallbackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                deviceManager = new DeviceManager();
+                deviceManager.productId = TEST_PRODUCTID;
+                deviceManager.dsn = TEST_DSN;
+                deviceManager.deviceOEM = TEST_DEVOEM;
+                deviceManager.deviceType = TEST_DEVTYPE;
                 proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager, new UserCenterStateListener() {
                     @Override
-                    public void onSuccess(int type) {
+                    public void onSuccess(ELoginPlatform platform, int type) {
                         switch (type) {
                             case UserCenterStateListener.LOGIN_TYPE:
+                                ProductManager.getInstance().tvsBind(MainActivity.this, platform, TEST_PRODUCTID, TEST_DSN);
                                 break;
                             case UserCenterStateListener.LOGOUT_TYPE:
+                                ProductManager.getInstance().tvsUnbind(MainActivity.this, platform, TEST_PRODUCTID, TEST_DSN);
                                 break;
                         }
                     }
@@ -261,38 +283,35 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         devicebindButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PushInfoManager pushInfoManager = PushInfoManager.getInstance();
-                DeviceManager testDevManager = new DeviceManager();
-                pushInfoManager.id = "pushid";
-                pushInfoManager.idExtra = "pushidextra";
-                pushInfoManager.idType = 0;
+                PushInfoManager pushManager = PushInfoManager.getInstance();
+                DeviceManager devManager = new DeviceManager();
+                pushManager.idType = EAIPushIdType._ETVSSpeakerIdentifier;
+                pushManager.idExtra = ConstantValues.PUSHMGR_IDEXTRA;
+                devManager.productId = TEST_PRODUCTID;
+                devManager.dsn = TEST_DSN;
 
-                testDevManager.qua = "devqua";
-                testDevManager.imei = "devimei";
-                testDevManager.license = "devlc";
-                testDevManager.mac = "devmac";
-                testDevManager.qimei = "devqimei";
-                testDevManager.enrollTime = 20L;
-                testDevManager.bindTime = 10L;
-                testDevManager.guid = "devguid";
-                testDevManager.deviceName = "devname";
-                testDevManager.deviceOEMUrl = "devOEMUrl";
-                testDevManager.deviceOEM = "devOEM";
-                testDevManager.deviceType = "devType";
-                testDevManager.deviceSerial = "devSerial";
-                testDevManager.deviceId = "devId";
-                testDevManager.deviceMark = "devMark";
-
-                proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushInfoManager, testDevManager);
-//                proxy.requestSetPushMapInfo(TEST_PLATFORM, pushInfoManager, testDevManager);
+                proxy.requestSetPushMapInfoEx(TEST_PLATFORM, pushManager, devManager);
             }
         });
 
-        devicescanButton.setOnClickListener(new View.OnClickListener() {
+        deviceunbindButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UDPClient.start(MainActivity.this);
-//                proxy.requestGetPushDeviceInfo(TEST_PLATFORM);
+                PushInfoManager pushManager = PushInfoManager.getInstance();
+                DeviceManager devManager = new DeviceManager();
+                pushManager.idType = EAIPushIdType._ETVSSpeakerIdentifier;
+                pushManager.idExtra = ConstantValues.PUSHMGR_IDEXTRA;
+                devManager.productId = TEST_PRODUCTID;
+                devManager.dsn = TEST_DSN;
+
+                proxy.requestDelPushMapInfo(TEST_PLATFORM, pushManager, devManager);
+            }
+        });
+
+        getBindDevicesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                proxy.requestGetPushDeviceInfo(TEST_PLATFORM);
             }
         });
 
@@ -302,7 +321,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 DeviceManager testDevManager = new DeviceManager();
                 testDevManager.qua = "devqua";
                 testDevManager.imei = "devimei";
-                testDevManager.license = "devlc";
+                testDevManager.lc = "devlc";
                 testDevManager.mac = "a0:b1:c2:d3:e4:f6";
                 testDevManager.qimei = "devqimei";
                 testDevManager.enrollTime = 20L;
@@ -313,10 +332,17 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 testDevManager.deviceOEM = "Tencent";
                 testDevManager.deviceType = "SPEAKER";
                 testDevManager.deviceSerial = "devSerial";
-                testDevManager.deviceId = "devId";
+                testDevManager.productId = "devId";
                 testDevManager.deviceMark = "devMark";
 
                 proxy.getMemberStatus(TEST_PLATFORM, testDevManager);
+            }
+        });
+
+        toTVSButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
@@ -324,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     @Override
     protected void onResume() {
         super.onResume();
-        proxy.handleQQOpenUserInfo();
+        proxy.handleCheckQQOpenTokenValid();
     }
 
     @Override
@@ -398,6 +424,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.SET_PUSH_MAP_INFO_TYPE:
                 devicebindTextView.setText("Bind Success");
                 break;
+            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
+                deviceunbindTextView.setText("Unbind Success");
+                break;
+            case BindingListener.GET_PUSH_DEVICE_INFO_TYPE:
+                getBindDevicesTextView.setText("Get BindDevices Success count = " + ProductManager.getInstance().pushDeviceInfos.size());
+                break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
                 getMemberStatusTextView.setText("Get Member Status Success");
                 break;
@@ -432,6 +464,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case AuthorizeListener.QQOPEN_VALID_LOGIN_TYPE:
                 Toast.makeText(MainActivity.this, "QQOpen Login InValid", Toast.LENGTH_SHORT).show();
                 break;
+            case AuthorizeListener.USERINFORECV_TYPE:
+                break;
             case BindingListener.GET_CAPTCHA_TYPE:
                 getCaptchaTextView.setText("Captcha Send Error");
                 break;
@@ -451,6 +485,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.SET_PUSH_MAP_INFO_TYPE:
                 devicebindTextView.setText("Bind Error");
                 break;
+            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
+                deviceunbindTextView.setText("Unbind Error");
+                break;
+            case BindingListener.GET_PUSH_DEVICE_INFO_TYPE:
+                getBindDevicesTextView.setText("Get BindDevices Error");
+                break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
                 getMemberStatusTextView.setText("Get Member Status Error");
                 break;
@@ -462,35 +502,6 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         switch (type) {
             case AuthorizeListener.AUTH_TYPE:
                 break;
-        }
-    }
-
-    @Override
-    public void onUDPResponse(String ip, int req, String data) {
-        if (req == UDPClient.UDP_CLIENT_STARTED) {
-            UDPClient.requestAll(UDPClient.REQ_DEVICE_INFO);
-        }
-        else if (req == UDPClient.REQ_DEVICE_INFO) {
-            deviceManager = new DeviceManager(ip, data);
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    devicescanTextView.setText(deviceManager.toSimpleString());
-                }
-            });
-        }
-        else if (req == UDPClient.SET_ACCOUNT_INFO) {
-            BindManager.getInstance().bind(ip, "", data, new BindManager.Callback() {
-                @Override
-                public void onSuccess(String msg) {
-
-                }
-
-                @Override
-                public void onFail(String msg) {
-
-                }
-            });
         }
     }
 
@@ -526,13 +537,18 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         queryLocationTextView = (TextView) findViewById(R.id.querylocationtextview);
 
         devicebindButton = (Button) findViewById(R.id.devicebindbtn);
-        devicebindTextView = (TextView) findViewById(R.id.devicebindbtntextview);
+        devicebindTextView = (TextView) findViewById(R.id.devicebindtextview);
 
-        devicescanButton = (Button) findViewById(R.id.devicescanbtn);
-        devicescanTextView = (TextView) findViewById(R.id.devicescantext);
+        deviceunbindButton = (Button) findViewById(R.id.deviceunbindbtn);
+        deviceunbindTextView = (TextView) findViewById(R.id.deviceunbindtextview);
+
+        getBindDevicesButton = (Button) findViewById(R.id.getbinddevicesbtn);
+        getBindDevicesTextView = (TextView) findViewById(R.id.getbinddevicestext);
 
         getMemberStatusButton = (Button) findViewById(R.id.getmemberstatusbtn);
         getMemberStatusTextView = (TextView) findViewById(R.id.getmemberstatustext);
+
+        toTVSButton = (Button) findViewById(R.id.totvsbtn);
 
         wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
         wxATTextView = (TextView)findViewById(R.id.accesstokenid);
@@ -546,19 +562,16 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     }
 
     private void registerProxy() {
-        proxy = LoginProxy.getInstance(appidWx, appidQQOpen);
-        innerProxy = LoginProxy.getInstance(appidWx, appidQQ);
-
-        /*-------------------------------------Use CustomApplication Context Start-------------------------------------*/
-//      proxy = LoginProxy.getInstance(appidWx, appidQQOpen, getApplicationContext());
-//      innerProxy = LoginProxy.getInstance(appidWx, appidQQ, getApplicationContext());
-        /*-------------------------------------Use CustomApplication Context End-------------------------------------*/
+        proxy = LoginProxy.getInstance(TEST_APPID_WX, TEST_APPID_QQOPEN, this);
+        innerProxy = LoginProxy.getInstance(TEST_APPID_WX, TEST_APPID_QQ, this);
 
         wxInfoManager = (WxInfoManager) proxy.getInfoManager(ELoginPlatform.WX);
         qqOpenInfoManager = (QQOpenInfoManager) proxy.getInfoManager(ELoginPlatform.QQOpen);
         qqInfoManager = (QQInfoManager) innerProxy.getInfoManager(ELoginPlatform.QQ);
 
         proxy.setOwnActivity(this);
+
+
         proxy.setAuthorizeListener(this);
         proxy.setBindingListener(this);
 

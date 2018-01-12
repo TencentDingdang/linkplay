@@ -197,19 +197,19 @@
             />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/devicescanlayout"
+        android:id="@+id/getbinddeviceslayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/querylocationlayout">
         <Button
-            android:id="@+id/devicescanbtn"
+            android:id="@+id/getbinddevicesbtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="Scan Device"/>
+            android:text="Get Bind Devices"/>
         <TextView
-            android:id="@+id/devicescantext"
+            android:id="@+id/getbinddevicestext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"/>
@@ -218,7 +218,7 @@
         android:id="@+id/devicebindlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/devicescanlayout"
+        android:layout_below="@id/getbinddeviceslayout"
         android:orientation="horizontal">
         <Button
             android:id="@+id/devicebindbtn"
@@ -227,7 +227,17 @@
             android:textAllCaps="false"
             android:text="Bind Device"/>
         <TextView
-            android:id="@+id/devicebindbtntextview"
+            android:id="@+id/devicebindtextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/deviceunbindbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Unbind Device"/>
+        <TextView
+            android:id="@+id/deviceunbindtextview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -248,11 +258,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
+    <Button
+        android:id="@+id/totvsbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/getmemberstatuslayout"
+        android:textAllCaps="false"
+        android:text="To TVS"/>
     <LinearLayout
         android:id="@+id/wxtokenlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getmemberstatuslayout"
+        android:layout_below="@id/totvsbtn"
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
