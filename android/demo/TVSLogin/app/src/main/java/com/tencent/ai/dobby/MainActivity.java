@@ -205,10 +205,42 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     public void onSuccess(ELoginPlatform platform, int type) {
                         switch (type) {
                             case UserCenterStateListener.LOGIN_TYPE:
-                                ProductManager.getInstance().tvsBind(MainActivity.this, platform, TEST_PRODUCTID, TEST_DSN);
+                                ProductManager.getInstance().tvsManageDevice(MainActivity.this, ProductManager.EManageType.BIND_TYPE, platform, TEST_PRODUCTID, TEST_DSN, new BindingListener() {
+                                    @Override
+                                    public void onSuccess(int type) {
+                                        switch (type) {
+                                            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
+                                                break;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(int type) {
+                                        switch (type) {
+                                            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
+                                                break;
+                                        }
+                                    }
+                                });
                                 break;
                             case UserCenterStateListener.LOGOUT_TYPE:
-                                ProductManager.getInstance().tvsUnbind(MainActivity.this, platform, TEST_PRODUCTID, TEST_DSN);
+                                ProductManager.getInstance().tvsManageDevice(MainActivity.this, ProductManager.EManageType.UNBIND_TYPE, platform, TEST_PRODUCTID, TEST_DSN, new BindingListener() {
+                                    @Override
+                                    public void onSuccess(int type) {
+                                        switch (type) {
+                                            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
+                                                break;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(int type) {
+                                        switch (type) {
+                                            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
+                                                break;
+                                        }
+                                    }
+                                });
                                 break;
                         }
                     }
