@@ -3,6 +3,7 @@ package com.tencent.ai.dobby;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +21,8 @@ import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
 import com.tencent.ai.tvs.env.EUserAttrType;
+import com.tencent.ai.tvs.info.CPMemberManager;
+import com.tencent.ai.tvs.info.DeviceCPMemberManager;
 import com.tencent.ai.tvs.info.DeviceManager;
 import com.tencent.ai.tvs.info.LocManager;
 import com.tencent.ai.tvs.info.LocationInfo;
@@ -63,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button wxLoginBtn, wxLogoutBtn;
     private Button qqOpenLoginBtn, qqOpenLogoutBtn;
     private Button qqLoginBtn, qqLogoutBtn;
-    private Button toUserCenterBtn, toUserCenterWithCallbackBtn;
+    private Button toUserCenterBtn, toUserCenterWithCallbackBtn, toGetClientIdBtn;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -88,10 +91,16 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button getBindDevicesButton;
     private TextView getBindDevicesTextView;
 
+    private Button getBindAccountButton;
+    private TextView getBindAccountTextView;
+
     private Button getMemberStatusButton;
     private TextView getMemberStatusTextView;
 
-    private Button toTVSButton;
+    private Button getDeviceStatusButton;
+    private TextView getDeviceStatusTextView;
+
+    private Button toSmartLinkButton, toSoftAPButton, toQRLoginButton;
 
     private LinearLayout wxTokenLayout, qqopenTokenLayout, qqTokenLayout;
     private TextView wxATTextView, wxRTTextView, qqopenATTextView, qqATTextView;
@@ -140,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     return;
                 }
                 TEST_PLATFORM = ELoginPlatform.WX;
-                proxy.requestLogin(ELoginPlatform.WX, "productId", "dsn", MainActivity.this);
+                proxy.requestLogin(ELoginPlatform.WX, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
             }
         });
 
@@ -148,14 +157,14 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 TEST_PLATFORM = ELoginPlatform.QQOpen;
-                proxy.requestLogin(ELoginPlatform.QQOpen, "productId", "dsn", MainActivity.this);
+                proxy.requestLogin(ELoginPlatform.QQOpen, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
             }
         });
 
         qqLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                innerProxy.requestLogin(ELoginPlatform.QQ, "productId", "dsn", MainActivity.this);
+                innerProxy.requestLogin(ELoginPlatform.QQ, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
             }
         });
 
@@ -177,6 +186,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 innerProxy.clearToken(ELoginPlatform.QQ, MainActivity.this);
+            }
+        });
+
+        toGetClientIdBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("ClientId", proxy.getClientId(TEST_PLATFORM));
             }
         });
 
@@ -205,42 +221,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     public void onSuccess(ELoginPlatform platform, int type) {
                         switch (type) {
                             case UserCenterStateListener.LOGIN_TYPE:
-                                ProductManager.getInstance().tvsManageDevice(MainActivity.this, ProductManager.EManageType.BIND_TYPE, platform, TEST_PRODUCTID, TEST_DSN, new BindingListener() {
-                                    @Override
-                                    public void onSuccess(int type) {
-                                        switch (type) {
-                                            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
-                                                break;
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(int type) {
-                                        switch (type) {
-                                            case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
-                                                break;
-                                        }
-                                    }
-                                });
                                 break;
                             case UserCenterStateListener.LOGOUT_TYPE:
-                                ProductManager.getInstance().tvsManageDevice(MainActivity.this, ProductManager.EManageType.UNBIND_TYPE, platform, TEST_PRODUCTID, TEST_DSN, new BindingListener() {
-                                    @Override
-                                    public void onSuccess(int type) {
-                                        switch (type) {
-                                            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
-                                                break;
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(int type) {
-                                        switch (type) {
-                                            case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
-                                                break;
-                                        }
-                                    }
-                                });
                                 break;
                         }
                     }
@@ -347,31 +329,60 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
-        getMemberStatusButton.setOnClickListener(new View.OnClickListener() {
+        getBindAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeviceManager testDevManager = new DeviceManager();
-                testDevManager.qua = "devqua";
-                testDevManager.imei = "devimei";
-                testDevManager.lc = "devlc";
-                testDevManager.mac = "a0:b1:c2:d3:e4:f6";
-                testDevManager.qimei = "devqimei";
-                testDevManager.enrollTime = 20L;
-                testDevManager.bindTime = 10L;
-                testDevManager.guid = "devguid";
-                testDevManager.deviceName = "devname";
-                testDevManager.deviceOEMUrl = "devOEMUrl";
-                testDevManager.deviceOEM = "Tencent";
-                testDevManager.deviceType = "SPEAKER";
-                testDevManager.deviceSerial = "devSerial";
-                testDevManager.productId = "devId";
-                testDevManager.deviceMark = "devMark";
-
-                proxy.getMemberStatus(TEST_PLATFORM, testDevManager);
+                PushInfoManager pushManager = PushInfoManager.getInstance();
+                DeviceManager devManager = new DeviceManager();
+                pushManager.idType = EAIPushIdType._ETVSSpeakerIdentifier;
+                pushManager.idExtra = ConstantValues.PUSHMGR_IDEXTRA;
+                devManager.productId = TEST_PRODUCTID;
+                devManager.dsn = TEST_DSN;
+                proxy.requestGetBoundAcctByPushInfo(TEST_PLATFORM, pushManager, devManager);
             }
         });
 
-        toTVSButton.setOnClickListener(new View.OnClickListener() {
+        getMemberStatusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deviceManager = new DeviceManager();
+                deviceManager.productId = TEST_PRODUCTID;
+                deviceManager.dsn = TEST_DSN;
+                deviceManager.deviceOEM = TEST_DEVOEM;
+                deviceManager.deviceType = TEST_DEVTYPE;
+
+                proxy.getMemberStatus(TEST_PLATFORM, deviceManager);
+            }
+        });
+
+        getDeviceStatusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deviceManager = new DeviceManager();
+                deviceManager.productId = TEST_PRODUCTID;
+                deviceManager.dsn = TEST_DSN;
+                deviceManager.deviceOEM = TEST_DEVOEM;
+                deviceManager.deviceType = TEST_DEVTYPE;
+
+                proxy.getDeviceStatus(TEST_PLATFORM, deviceManager);
+            }
+        });
+
+        toSmartLinkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        toSoftAPButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        toQRLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -460,10 +471,18 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 deviceunbindTextView.setText("Unbind Success");
                 break;
             case BindingListener.GET_PUSH_DEVICE_INFO_TYPE:
-                getBindDevicesTextView.setText("Get BindDevices Success count = " + ProductManager.getInstance().pushDeviceInfos.size());
+                getBindDevicesTextView.setText("Devices count = " + ProductManager.getInstance().pushDeviceInfos.size());
+                break;
+            case BindingListener.GET_BOUND_ACCT_BY_PUSH_INFO_TYPE:
+                getBindAccountTextView.setText("OpenId :" + ProductManager.getInstance().aiAcctInfo.strAcctId);
                 break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
-                getMemberStatusTextView.setText("Get Member Status Success");
+                getMemberStatusTextView.setText("vip=" + CPMemberManager.getInstance().vip + ",sT=" + CPMemberManager.getInstance().startTime +",eT=" + CPMemberManager.getInstance().expireTime);
+                break;
+            case BindingListener.BIND_GET_DEVICE_STATUS_TYPE:
+                getDeviceStatusTextView.setText("sta=" + DeviceCPMemberManager.getInstance().deviceStatus
+                                + ",amt=" + DeviceCPMemberManager.getInstance().deviceAmt
+                                    +",amtU=" + DeviceCPMemberManager.getInstance().deviceAmtUnit);
                 break;
         }
     }
@@ -523,8 +542,14 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.GET_PUSH_DEVICE_INFO_TYPE:
                 getBindDevicesTextView.setText("Get BindDevices Error");
                 break;
+            case BindingListener.GET_BOUND_ACCT_BY_PUSH_INFO_TYPE:
+                getBindAccountTextView.setText("GetBindACCT Error");
+                break;
             case BindingListener.BIND_GET_MEMBER_STATUS_TYPE:
                 getMemberStatusTextView.setText("Get Member Status Error");
+                break;
+            case BindingListener.BIND_GET_DEVICE_STATUS_TYPE:
+                getDeviceStatusTextView.setText("Get Device Status Error");
                 break;
         }
     }
@@ -553,6 +578,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         qqLoginBtn = (Button)findViewById(R.id.qqlogin);
         qqLogoutBtn = (Button)findViewById(R.id.qqlogout);
 
+        toGetClientIdBtn = (Button) findViewById(R.id.getclientidbtn);
+
         getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
         getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);
         getCaptchaTextView = (TextView) findViewById(R.id.getcaptchatextview);
@@ -577,10 +604,18 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         getBindDevicesButton = (Button) findViewById(R.id.getbinddevicesbtn);
         getBindDevicesTextView = (TextView) findViewById(R.id.getbinddevicestext);
 
+        getBindAccountButton = (Button) findViewById(R.id.getbindaccountbtn);
+        getBindAccountTextView = (TextView) findViewById(R.id.getbindaccounttext);
+
         getMemberStatusButton = (Button) findViewById(R.id.getmemberstatusbtn);
         getMemberStatusTextView = (TextView) findViewById(R.id.getmemberstatustext);
 
-        toTVSButton = (Button) findViewById(R.id.totvsbtn);
+        getDeviceStatusButton = (Button) findViewById(R.id.getdevicestatusbtn);
+        getDeviceStatusTextView = (TextView) findViewById(R.id.getdevicestatustext);
+
+        toSmartLinkButton = (Button) findViewById(R.id.tosmartlinkbtn);
+        toSoftAPButton = (Button) findViewById(R.id.tosoftapbtn);
+        toQRLoginButton = (Button) findViewById(R.id.toqrloginbtn);
 
         wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
         wxATTextView = (TextView)findViewById(R.id.accesstokenid);

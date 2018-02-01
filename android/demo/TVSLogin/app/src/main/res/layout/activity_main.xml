@@ -107,6 +107,13 @@
             android:textAllCaps="false"
             android:text="Logout"
             />
+        <Button
+            android:id="@+id/getclientidbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Get ClientId"
+            />
     </LinearLayout>
     <LinearLayout
         android:id="@+id/getcaptchalayout"
@@ -197,7 +204,7 @@
             />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/getbinddeviceslayout"
+        android:id="@+id/getbindlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -213,12 +220,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"/>
+        <Button
+            android:id="@+id/getbindaccountbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Get Bind Account"/>
+        <TextView
+            android:id="@+id/getbindaccounttext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/devicebindlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getbinddeviceslayout"
+        android:layout_below="@id/getbindlayout"
         android:orientation="horizontal">
         <Button
             android:id="@+id/devicebindbtn"
@@ -242,7 +260,7 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
     <LinearLayout
-        android:id="@+id/getmemberstatuslayout"
+        android:id="@+id/getstatuslayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -257,19 +275,47 @@
             android:id="@+id/getmemberstatustext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/getdevicestatusbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Get Device Status"/>
+        <TextView
+            android:id="@+id/getdevicestatustext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
-    <Button
-        android:id="@+id/totvsbtn"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/otherfunctionlayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/getmemberstatuslayout"
-        android:textAllCaps="false"
-        android:text="To TVS"/>
+        android:orientation="horizontal"
+        android:layout_below="@id/getstatuslayout">
+        <Button
+            android:id="@+id/tosmartlinkbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="To SmarkLink"/>
+        <Button
+            android:id="@+id/tosoftapbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="To SoftAP"/>
+        <Button
+            android:id="@+id/toqrloginbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="To QRLogin"/>
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/wxtokenlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/totvsbtn"
+        android:layout_below="@id/otherfunctionlayout"
         android:orientation="vertical"
         android:visibility="gone">
         <TextView
