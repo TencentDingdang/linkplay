@@ -225,9 +225,10 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  * @param pushId (APP或设备的)pushId
  * @param pushIdExtra (APP或设备的)pushIdExtra
  * @param pushDevice push 设备信息
+ * @param isApp 是否 APP
  * @param handler 回调，BOOL 值表示是否成功
  */
--(void)bindPushInfoWithGuid:(NSString*)guid pushId:(NSString*)pushId pushIdExtra:(NSString*)pushIdExtra pushDevice:(TVSPushDevice*)pushDevice handler:(void(^)(BOOL))handler;
+-(void)bindPushInfoWithGuid:(NSString*)guid pushId:(NSString*)pushId pushIdExtra:(NSString*)pushIdExtra pushDevice:(TVSPushDevice*)pushDevice isApp:(BOOL)isApp handler:(void(^)(BOOL))handler;
 
 /*!
  * @brief 解除绑定 Push 相关信息
@@ -247,30 +248,30 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  */
 -(void)queryPushDevicesWithHandler:(void(^)(NSArray<TVSPushDevice*>*))handler;
 
-/*!
- * @brief 扫描当前无线局域网内(集成了叮当语音服务)的设备(音箱、电视、耳机等)
- * @param handler 回调
- */
--(void)discoverWlanDevicesWithHandler:(void(^)(TVSWLANDevice*))handler;
-
-/*!
- * @brief 将 WiFi 信息同步给待配网的叮当设备
- * @warning 必须确保 APP 已接入设备所在热点 WiFi
- * @param ssid WiFi 唯一标识
- * @param password WiFi 密码
- * @param ip 设备热点 WiFi 网关地址
- * @param handler 回调
- */
--(void)sendWifiSsid:(NSString*)ssid password:(NSString*)password ip:(NSString*)ip handler:(void(^)(TVSWLANDevice*))handler;
-
-/*!
- * @brief (APP绑定设备成功后)将账号信息同步给设备
- * @warning 必须确保APP已登录
- * @param deviceIp 扫描到的局域网设备IP地址
- * @param bundleId App bundleId
- * @param guid app guid
- * @param handler 回调，参数为 TVSBindDeviceResult 枚举
- */
--(void)sendAccountInfoToDeviceIp:(NSString*)deviceIp bundleId:(NSString*)bundleId guid:(NSString*)guid handler:(void(^)(TVSBindDeviceResult))handler;
+///*!
+// * @brief 扫描当前无线局域网内(集成了叮当语音服务)的设备(音箱、电视、耳机等)
+// * @param handler 回调
+// */
+//-(void)discoverWlanDevicesWithHandler:(void(^)(TVSWLANDevice*))handler;
+//
+///*!
+// * @brief 将 WiFi 信息同步给待配网的叮当设备
+// * @warning 必须确保 APP 已接入设备所在热点 WiFi
+// * @param ssid WiFi 唯一标识
+// * @param password WiFi 密码
+// * @param ip 设备热点 WiFi 网关地址
+// * @param handler 回调
+// */
+//-(void)sendWifiSsid:(NSString*)ssid password:(NSString*)password ip:(NSString*)ip handler:(void(^)(TVSWLANDevice*))handler;
+//
+///*!
+// * @brief (APP绑定设备成功后)将账号信息同步给设备
+// * @warning 必须确保APP已登录
+// * @param deviceIp 扫描到的局域网设备IP地址
+// * @param bundleId App bundleId
+// * @param guid app guid
+// * @param handler 回调，参数为 TVSBindDeviceResult 枚举
+// */
+//-(void)sendAccountInfoToDeviceIp:(NSString*)deviceIp bundleId:(NSString*)bundleId guid:(NSString*)guid handler:(void(^)(TVSBindDeviceResult))handler;
 
 @end
