@@ -15,13 +15,13 @@
 		80599B841FD82CA800901F7C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80599B831FD82C9F00901F7C /* SystemConfiguration.framework */; };
 		80599B861FD82CBD00901F7C /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80599B851FD82CB600901F7C /* CoreTelephony.framework */; };
 		80599B881FD82CF300901F7C /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 80599B871FD82CF300901F7C /* libstdc++.tbd */; };
-		80599BA61FD8378300901F7C /* res.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 80599BA51FD8378300901F7C /* res.bundle */; };
 		8AD8081F1F3DB0E80040C9CF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD8081E1F3DB0E80040C9CF /* main.m */; };
 		8AD808221F3DB0E80040C9CF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD808211F3DB0E80040C9CF /* AppDelegate.m */; };
 		8AD808251F3DB0E80040C9CF /* LoginController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8AD808241F3DB0E80040C9CF /* LoginController.m */; };
 		8AD808281F3DB0E80040C9CF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AD808261F3DB0E80040C9CF /* Main.storyboard */; };
 		8AD8082A1F3DB0E80040C9CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8AD808291F3DB0E80040C9CF /* Assets.xcassets */; };
 		8AD8082D1F3DB0E80040C9CF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8AD8082B1F3DB0E80040C9CF /* LaunchScreen.storyboard */; };
+		BE64B6E41F052E1D05A2CF72 /* libPods-TVSAccountDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9A116544346F83D8A8992DAC /* libPods-TVSAccountDemo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -46,7 +46,7 @@
 		80599B831FD82C9F00901F7C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		80599B851FD82CB600901F7C /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		80599B871FD82CF300901F7C /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
-		80599BA51FD8378300901F7C /* res.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = res.bundle; path = TVSAccountSDK.framework/res.bundle; sourceTree = "<group>"; };
+		8280EAE70BEB3A47F85369CA /* Pods-TVSAccountDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TVSAccountDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TVSAccountDemo/Pods-TVSAccountDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		8AD8081A1F3DB0E80040C9CF /* TVSAccountDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TVSAccountDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD8081E1F3DB0E80040C9CF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8AD808201F3DB0E80040C9CF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -57,6 +57,8 @@
 		8AD808291F3DB0E80040C9CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8AD8082C1F3DB0E80040C9CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8AD8082E1F3DB0E80040C9CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9469E77371DE60DE145348FE /* Pods-TVSAccountDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TVSAccountDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-TVSAccountDemo/Pods-TVSAccountDemo.release.xcconfig"; sourceTree = "<group>"; };
+		9A116544346F83D8A8992DAC /* libPods-TVSAccountDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TVSAccountDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,12 +74,22 @@
 				80599B801FD82BFF00901F7C /* libz.tbd in Frameworks */,
 				80599B861FD82CBD00901F7C /* CoreTelephony.framework in Frameworks */,
 				80599B841FD82CA800901F7C /* SystemConfiguration.framework in Frameworks */,
+				BE64B6E41F052E1D05A2CF72 /* libPods-TVSAccountDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		489A4B7CC496B5BB515224A5 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8280EAE70BEB3A47F85369CA /* Pods-TVSAccountDemo.debug.xcconfig */,
+				9469E77371DE60DE145348FE /* Pods-TVSAccountDemo.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		8A9738311F418BBD003BD45B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +101,7 @@
 				80599B7D1FD82BEE00901F7C /* libsqlite3.tbd */,
 				80599B7B1FD82B7000901F7C /* libWeChatSDK.a */,
 				80599B491FD8262F00901F7C /* TVSAccountSDK.framework */,
+				9A116544346F83D8A8992DAC /* libPods-TVSAccountDemo.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -96,10 +109,10 @@
 		8AD808111F3DB0E80040C9CF = {
 			isa = PBXGroup;
 			children = (
-				80599BA51FD8378300901F7C /* res.bundle */,
 				8AD8081C1F3DB0E80040C9CF /* TVSAccountDemo */,
 				8AD8081B1F3DB0E80040C9CF /* Products */,
 				8A9738311F418BBD003BD45B /* Frameworks */,
+				489A4B7CC496B5BB515224A5 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,10 +155,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8AD808471F3DB0E80040C9CF /* Build configuration list for PBXNativeTarget "TVSAccountDemo" */;
 			buildPhases = (
+				EF1AF91E94E3B925635D4A7D /* [CP] Check Pods Manifest.lock */,
 				8AD808161F3DB0E80040C9CF /* Sources */,
 				8AD808171F3DB0E80040C9CF /* Frameworks */,
 				8AD808181F3DB0E80040C9CF /* Resources */,
 				809D23971FA72A4D00C2C455 /* Embed Frameworks */,
+				81C6FC47E363418BABD4586F /* [CP] Embed Pods Frameworks */,
+				FAEBC3B4EF7CC7DDD11E8C8D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -195,7 +211,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80599BA61FD8378300901F7C /* res.bundle in Resources */,
 				8AD8082D1F3DB0E80040C9CF /* LaunchScreen.storyboard in Resources */,
 				8AD8082A1F3DB0E80040C9CF /* Assets.xcassets in Resources */,
 				8AD808281F3DB0E80040C9CF /* Main.storyboard in Resources */,
@@ -203,6 +218,57 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		81C6FC47E363418BABD4586F /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TVSAccountDemo/Pods-TVSAccountDemo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EF1AF91E94E3B925635D4A7D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-TVSAccountDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FAEBC3B4EF7CC7DDD11E8C8D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-TVSAccountDemo/Pods-TVSAccountDemo-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8AD808161F3DB0E80040C9CF /* Sources */ = {
@@ -343,6 +409,7 @@
 		};
 		8AD808481F3DB0E80040C9CF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8280EAE70BEB3A47F85369CA /* Pods-TVSAccountDemo.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -360,7 +427,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/WeChat",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TVSAccountDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -368,6 +438,7 @@
 		};
 		8AD808491F3DB0E80040C9CF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9469E77371DE60DE145348FE /* Pods-TVSAccountDemo.release.xcconfig */;
 			buildSettings = {
 				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -385,7 +456,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/WeChat",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.TVSAccountDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

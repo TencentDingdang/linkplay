@@ -60,7 +60,7 @@
 
 //调用微信支付
 - (IBAction)onClickWXPay:(id)sender {
-    [[TVSAccount shared]wxPayWithPartnerid:@"partnerid" prepayid:@"prepayid" package:@"package" noncestr:@"noncestr" sign:@"sign" timestamp:123456789 handler:^(BOOL success, NSString* key){
+    [[TVSAccount shared]wxPayWithAppId:@"appid" partnerid:@"partnerid" prepayid:@"prepayid" package:@"package" noncestr:@"noncestr" sign:@"sign" timestamp:123456789 handler:^(BOOL success, NSString* key){
         if (success) {
             [self showText:[NSString stringWithFormat:@"微信支付成功：%@", key]];
         } else {
@@ -111,8 +111,8 @@
 //进入会员H5页面
 - (IBAction)onClickBtnUserCenter:(id)sender {
     TVSMember* uc = [TVSMember new];
-    [uc setDeviceId:@"mDeviceId" deviceType:@"mDeviceType" deviceOEM:@"mDeviceOEM"];
-    [uc enterPage:TVSPageTypeMember fromViewController:self title:@"个人中心"];
+    [uc setDeviceType:@"mDeviceType" deviceOEM:@"mDeviceOEM" productId:@"7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da:9cb1fbf4c54442cc80c9aed8cb3c25b6" DSN:@"mDSN"];
+    [uc enterPage:TVSPageTypeMember fromViewController:self title:@"个人中心" delegate:nil];
 
 //    if ([TVSAccount shared].isWXTokenExist || [TVSAccount shared].isQQTokenExist) {//必须先登录
 //        NSString* phone= @"13987654321";

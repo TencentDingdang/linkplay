@@ -1,0 +1,4 @@
+target 'TVSAccountDemo' do
+platform:ios, '8.0'
+pod 'CocoaLumberjack'
+end

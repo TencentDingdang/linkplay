@@ -251,9 +251,10 @@ extern NSString* const TVSInvalidRefreshToken;
 
 /*!
  * @brief 检测微信是否安装，版本是否支持
- * @return
+ * @param alert 是否提示
+ * @return 安装且版本支持返回 YES
  */
--(BOOL)checkWXApp;
+-(BOOL)checkWXAppWithAlert:(BOOL)alert;
 
 /*!
  * @brief QQ 登录
