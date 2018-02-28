@@ -248,6 +248,14 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  */
 -(void)queryPushDevicesWithHandler:(void(^)(NSArray<TVSPushDevice*>*))handler;
 
+
+/*!
+ * @brief 根据设备信息反查绑定的账号信息
+ * @param pushDevice 设备信息
+ * @param handler 回调，NSString 为账号 openId
+ */
+-(void)queryBoundAccountWithPushInfo:(TVSPushDevice*)pushDevice handler:(void(^)(NSString*))handler;
+
 ///*!
 // * @brief 扫描当前无线局域网内(集成了叮当语音服务)的设备(音箱、电视、耳机等)
 // * @param handler 回调
