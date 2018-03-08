@@ -38,7 +38,7 @@
 
 //调用微信登录
 - (IBAction)onClickBtnWXLogin:(id)sender {
-    [[TVSAccount shared]wxLoginWithHandler:^(BOOL success){
+    [[TVSAccount shared]wxLoginWithViewController:self handler:^(BOOL success){
         [self showText:[NSString stringWithFormat:@"微信登录%@", success ? @"成功" : @"失败"]];
         if (success) {
             [self readAccountUserInfo];

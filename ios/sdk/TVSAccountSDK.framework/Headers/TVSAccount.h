@@ -10,6 +10,7 @@
  * @file TVSAccount.h
  */
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 /*!
  * @brief 非法的 ClientId 常量
@@ -221,6 +222,14 @@ extern NSString* const TVSInvalidRefreshToken;
  * @param handler 回调，BOOL 值表示是否成功
  */
 -(void)wxLoginWithHandler:(void(^)(BOOL))handler;
+
+/*!
+ * @brief 微信登录(支持未安装微信的情况)
+ * @warning 如果微信 token 不存在，则必须调用此方法，以获得 TVS 后台返回的相关账户信息
+ * @@param viewController 发起微信登录的界面
+ * @param handler 回调，BOOL 值表示是否成功
+ */
+-(void)wxLoginWithViewController:(UIViewController*)vc handler:(void(^)(BOOL))handler;
 
 /*!
  * @brief 微信支付(NativeSDK方式)
