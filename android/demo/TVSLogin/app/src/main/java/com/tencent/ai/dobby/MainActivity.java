@@ -66,7 +66,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button wxLoginBtn, wxLogoutBtn;
     private Button qqOpenLoginBtn, qqOpenLogoutBtn;
     private Button qqLoginBtn, qqLogoutBtn;
-    private Button toUserCenterBtn, toUserCenterWithCallbackBtn, toGetClientIdBtn;
+    private Button reportEndStateBtn, toUserCenterWithCallbackBtn, toGetClientIdBtn;
+
+    private TextView reportRelationTextView;
 
     private EditText getCaptchaEditText;
     private Button getCaptchaButton;
@@ -196,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             }
         });
 
-        toUserCenterBtn.setOnClickListener(new View.OnClickListener() {
+        reportEndStateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deviceManager = new DeviceManager();
@@ -204,7 +206,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 deviceManager.dsn = TEST_DSN;
                 deviceManager.deviceOEM = TEST_DEVOEM;
                 deviceManager.deviceType = TEST_DEVTYPE;
-                proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager);
+                deviceManager.guid = "";
+                proxy.reportEndState(TEST_PLATFORM, deviceManager);
             }
         });
 
@@ -371,21 +374,30 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toSmartLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, SmartLinkActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("loginplatform", TEST_PLATFORM.ordinal());
+                intent.putExtra("bundle", bundle);
+                startActivity(intent);
             }
         });
 
         toSoftAPButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, SoftAPActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("loginplatform", TEST_PLATFORM.ordinal());
+                intent.putExtra("bundle", bundle);
+                startActivity(intent);
             }
         });
 
         toQRLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, QRCodeActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -484,6 +496,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                                 + ",amt=" + DeviceCPMemberManager.getInstance().deviceAmt
                                     +",amtU=" + DeviceCPMemberManager.getInstance().deviceAmtUnit);
                 break;
+            case AuthorizeListener.REPORTENDSTATE_TYPE:
+                reportRelationTextView.setText("Succ");
+                break;
+            case AuthorizeListener.MANAGEACCT_TYPE:
+                break;
         }
     }
 
@@ -551,6 +568,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.BIND_GET_DEVICE_STATUS_TYPE:
                 getDeviceStatusTextView.setText("Get Device Status Error");
                 break;
+            case AuthorizeListener.REPORTENDSTATE_TYPE:
+                reportRelationTextView.setText("Error");
+                break;
+            case AuthorizeListener.MANAGEACCT_TYPE:
+                break;
         }
     }
 
@@ -569,8 +591,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
         wxLoginBtn = (Button)findViewById(R.id.wxlogin);
         wxLogoutBtn = (Button)findViewById(R.id.wxlogout);
-        toUserCenterBtn = (Button) findViewById(R.id.tousercenterbtn);
+        reportEndStateBtn = (Button) findViewById(R.id.reportendstatebtn);
         toUserCenterWithCallbackBtn = (Button) findViewById(R.id.tousercenterwithcbbtn);
+
+        reportRelationTextView = (TextView) findViewById(R.id.reportrelationtextview);
 
         qqOpenLoginBtn = (Button)findViewById(R.id.qqopenlogin);
         qqOpenLogoutBtn = (Button)findViewById(R.id.qqopenlogout);
