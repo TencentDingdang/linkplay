@@ -14,6 +14,5 @@ public class CustomApplication extends Application {
         super.onCreate();
         manager = LoginWupManager.getInstance(getApplicationContext());
         manager.startup();
-        manager.setLoginEnv(ELoginEnv.TEST);
     }
 }

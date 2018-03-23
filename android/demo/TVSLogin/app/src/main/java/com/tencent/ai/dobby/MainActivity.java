@@ -3,7 +3,6 @@ package com.tencent.ai.dobby;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +31,7 @@ import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
+import com.tencent.ai.tvs.qrcode.QRStateListener;
 import com.tencent.ai.tvs.ui.UserCenterStateListener;
 import com.tencent.connect.common.Constants;
 
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toGetClientIdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.v("ClientId", proxy.getClientId(TEST_PLATFORM));
+                Toast.makeText(MainActivity.this, "ClientId = " + proxy.getClientId(TEST_PLATFORM), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -396,8 +396,25 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toQRLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, QRCodeActivity.class);
-                startActivity(intent);
+                LoginProxy loginProxy = LoginProxy.getWebInstance(null, null, MainActivity.this);
+                loginProxy.requestQRLogin(MainActivity.this, new QRStateListener() {
+                    @Override
+                    public void onSuccess(ELoginPlatform platform, int type) {
+                        if (QRStateListener.LOGIN_TYPE == type) {
+                            Toast.makeText(MainActivity.this, "QRLogin valid token", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(int type) {
+                        Toast.makeText(MainActivity.this, "QRLogin invalid token", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onCancel(int type) {
+
+                    }
+                });
             }
         });
     }
@@ -660,6 +677,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         qqOpenInfoManager = (QQOpenInfoManager) proxy.getInfoManager(ELoginPlatform.QQOpen);
         qqInfoManager = (QQInfoManager) innerProxy.getInfoManager(ELoginPlatform.QQ);
 
+        proxy.initNetEnv();
         proxy.setOwnActivity(this);
 
 
