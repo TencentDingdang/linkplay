@@ -44,7 +44,11 @@ typedef NS_ENUM(NSInteger,TVSPageType) {
      */
     TVSPageTypeMember,
     /*!
-     * @brief 会员领取/充值页面
+     * @brief 会员领取页面
+     */
+    TVSPageTypeGetVIP,
+    /*!
+     * @brief 会员充值页面
      */
     TVSPageTypeRecharge,
     /*!
