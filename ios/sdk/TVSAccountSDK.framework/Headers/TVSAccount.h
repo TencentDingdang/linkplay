@@ -287,6 +287,33 @@ extern NSString* const TVSInvalidRefreshToken;
 -(void)qqTokenVerifyWithHandler:(void(^)(BOOL))handler;
 
 /*!
+ * @brief 通过微信/QQ 账号信息直接到 TVS 后台授权（换取tvsId）
+ * @warning 仅针对之前已经独自接入 QQ/微信 SDK，且自己维护 token 过期刷新的场景！!
+ * @param openId QQ/微信登录后返回的 openId
+ * @param accessToken QQ/微信登录后返回的 accessToken
+ * @param isWX 是否微信登录
+ * @param handler 回调，BOOL 值表示是否成功，成功后即可通过 TVSAccountInfo 读取 tvsId
+ */
+-(void)tvsAuthWithOpenId:(NSString*)openId accessToken:(NSString*)accessToken isWX:(BOOL)isWX handler:(void(^)(BOOL))handler;
+
+/*!
+ * @brief 验证 QQ token
+ * @warning 仅针对之前已经独自接入 QQ/微信 SDK，且自己维护 token 过期刷新的场景！!
+ * @param openId QQ/微信登录后返回的 openId
+ * @param accessToken QQ/微信登录后返回的 accessToken
+ * @param handler 回调，BOOL 值表示是否成功
+ */
+-(void)verifyQQTokenWithOpenId:(NSString*)openId accessToken:(NSString*)accessToken handler:(void(^)(BOOL))handler;
+
+/*!
+ * @brief 保存微信/QQ登录返回的用户资料信息
+ * @warning 仅针对之前已经独自接入 QQ/微信 SDK，且自己维护 token 过期刷新的场景！！
+ * @param json 微信/QQ登录返回的用户资料信息JSON
+ * @return 是否保存成功
+ */
+-(BOOL)setUserProfileJson:(NSString*)json;
+
+/*!
  * @brief 获取账号信息
  * @warning 必须在已登录状态调用
  * @return accountInfo
