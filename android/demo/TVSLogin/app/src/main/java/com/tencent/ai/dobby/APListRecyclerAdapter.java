@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tencent.ai.tvsdevice.APListInfo;
-import com.tencent.ai.tvsdevice.StringHexUtil;
+import com.tencent.ai.tvsdevice.info.APListInfo;
+import com.tencent.ai.tvsdevice.util.StringHexUtil;
 
 import java.util.List;
 

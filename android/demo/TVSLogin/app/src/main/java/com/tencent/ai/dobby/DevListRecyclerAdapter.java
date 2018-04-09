@@ -6,10 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tencent.ai.tvsdevice.APListInfo;
-import com.tencent.ai.tvsdevice.ProductInfo;
-import com.tencent.ai.tvsdevice.StringHexUtil;
-
 import org.teleal.cling.model.meta.Device;
 
 import java.util.List;

@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private static final String TEST_DEVOEM = "GGMM";
     private static final String TEST_DEVTYPE = "SPEAKER";
 
+    private static final String TEST_WX_AUTH_RET = "{\"access_token\":\"8_SIkvkPRb_YzKpfLNal5aANjPkZri_eZiOUh7pYuN2dF8liBhVyL9lawYb3Em-S6R1bzw_uPi6W8PMSFHK-DVP5SMR5GE6HsCRHdzuJcTz6s\",\"expires_in\":7200,\"refresh_token\":\"8_umoSNLEEY_u-a48x39m-Ti41sVNe4actHJHYBu07i4e9yv3bS9Fakq0xOlLnhwOSCng3ZnjuRu7v5cXa68Wv9AtiHF-_zOBXjF32dmIVJqI\",\"openid\":\"olW1HwuZs4zRIiTs8xN_5i65DU4Q\",\"scope\":\"snsapi_userinfo\",\"unionid\":\"o9GiTuAkK5sryCobPgdS_iDo1W8A\"}";
+    private static final String TEST_WX_REFRESH_RET = "{\"openid\":\"olW1HwuZs4zRIiTs8xN_5i65DU4Q\",\"access_token\":\"8_SIkvkPRb_YzKpfLNal5aANjPkZri_eZiOUh7pYuN2dF8liBhVyL9lawYb3Em-S6R1bzw_uPi6W8PMSFHK-DVP5SMR5GE6HsCRHdzuJcTz6s\",\"expires_in\":7200,\"refresh_token\":\"8_umoSNLEEY_u-a48x39m-Ti41sVNe4actHJHYBu07i4e9yv3bS9Fakq0xOlLnhwOSCng3ZnjuRu7v5cXa68Wv9AtiHF-_zOBXjF32dmIVJqI\",\"scope\":\"snsapi_base,snsapi_userinfo,\"}";
+    private static final String TEST_QQOPEN_AUTH_RET = "{\"ret\":0,\"openid\":\"24361BBA12837FFA742C79EC810A6DA8\",\"access_token\":\"B8EC8C0ADD6DEF7F2E380C8DC8CD6451\",\"pay_token\":\"399D4E199447C1D2B51376E6692CC55C\",\"expires_in\":7776000,\"pf\":\"desktop_m_qq-10000144-android-2002-\",\"pfkey\":\"7195cbb183f325e51c93a09d441f9243\",\"msg\":\"\",\"login_cost\":98,\"query_authority_cost\":352,\"authority_cost\":0,\"expires_time\":1530603609881}";
+    private static final String TEST_WX_USER_RET = " {\"openid\":\"olW1HwuZs4zRIiTs8xN_5i65DU4Q\",\"nickname\":\"时间段hddjd大喊大叫觉得\",\"sex\":0,\"language\":\"zh_CN\",\"city\":\"\",\"province\":\"\",\"country\":\"\",\"headimgurl\":\"http:\\/\\/thirdwx.qlogo.cn\\/mmopen\\/vi_32\\/eM2qvBP8HYxrXdCTlAib2ibmeJw4LYZfJOYsbDShNocXuIUWEnQ1Nwh5Nk5lBjb3LJhOt1r2dt5lHtIAdcUGx7RA\\/132\",\"privilege\":[],\"unionid\":\"o9GiTuAkK5sryCobPgdS_iDo1W8A\"}";
+    private static final String TEST_QQOPEN_USER_RET = "{\"ret\":0,\"msg\":\"\",\"is_lost\":0,\"nickname\":\"\",\"gender\":\"男\",\"province\":\"\",\"city\":\"\",\"year\":\"0\",\"figureurl\":\"http:\\/\\/qzapp.qlogo.cn\\/qzapp\\/1105886239\\/24361BBA12837FFA742C79EC810A6DA8\\/30\",\"figureurl_1\":\"http:\\/\\/qzapp.qlogo.cn\\/qzapp\\/1105886239\\/24361BBA12837FFA742C79EC810A6DA8\\/50\",\"figureurl_2\":\"http:\\/\\/qzapp.qlogo.cn\\/qzapp\\/1105886239\\/24361BBA12837FFA742C79EC810A6DA8\\/100\",\"figureurl_qq_1\":\"http:\\/\\/thirdqq.qlogo.cn\\/qqapp\\/1105886239\\/24361BBA12837FFA742C79EC810A6DA8\\/40\",\"figureurl_qq_2\":\"http:\\/\\/thirdqq.qlogo.cn\\/qqapp\\/1105886239\\/24361BBA12837FFA742C79EC810A6DA8\\/100\",\"is_yellow_vip\":\"0\",\"vip\":\"0\",\"yellow_vip_level\":\"0\",\"level\":\"0\",\"is_yellow_year_vip\":\"0\"}";
+
     private LoginProxy proxy;
 
     // 内部使用
@@ -111,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
     private static ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
 
+    private boolean isSimpleInterface;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -151,7 +159,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     return;
                 }
                 TEST_PLATFORM = ELoginPlatform.WX;
-                proxy.requestLogin(ELoginPlatform.WX, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
+                if (isSimpleInterface) {
+                    proxy.tvsAuth(TEST_PLATFORM, TEST_WX_AUTH_RET);
+                }
+                else {
+                    proxy.requestLogin(ELoginPlatform.WX, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
+                }
             }
         });
 
@@ -159,7 +172,12 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 TEST_PLATFORM = ELoginPlatform.QQOpen;
-                proxy.requestLogin(ELoginPlatform.QQOpen, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
+                if (isSimpleInterface) {
+                    proxy.tvsAuth(TEST_PLATFORM, TEST_QQOPEN_AUTH_RET);
+                }
+                else {
+                    proxy.requestLogin(ELoginPlatform.QQOpen, TEST_PRODUCTID, TEST_DSN, MainActivity.this);
+                }
             }
         });
 
@@ -454,9 +472,15 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 break;
             case AuthorizeListener.WX_TVSIDRECV_TYPE:
                 wxLoginBtn.setEnabled(false);
+                if (isSimpleInterface) {
+                    proxy.tvsSetUser(ELoginPlatform.WX, TEST_WX_USER_RET);
+                }
                 break;
             case AuthorizeListener.QQOPEN_TVSIDRECV_TYPE:
                 qqOpenLoginBtn.setEnabled(false);
+                if (isSimpleInterface) {
+                    proxy.tvsSetUser(ELoginPlatform.QQOpen, TEST_QQOPEN_USER_RET);
+                }
                 break;
             case AuthorizeListener.QQ_TVSIDRECV_TYPE:
                 qqLoginBtn.setEnabled(false);
@@ -687,18 +711,30 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         innerProxy.setOwnActivity(this);
         innerProxy.setAuthorizeListener(this);
         innerProxy.setBindingListener(this);
+
+        isSimpleInterface = false;
     }
 
     private void requestProxyOp() {
         if (proxy.isTokenExist(ELoginPlatform.WX, this)) {
-            proxy.requestTokenVerify(ELoginPlatform.WX, "productId", "dsn");
+            if (isSimpleInterface) {
+                proxy.tvsAuth(ELoginPlatform.WX, TEST_WX_REFRESH_RET);
+            }
+            else {
+                proxy.requestTokenVerify(ELoginPlatform.WX, "productId", "dsn");
+            }
         }
         else {
             wxLoginBtn.setEnabled(true);
         }
 
         if (proxy.isTokenExist(ELoginPlatform.QQOpen, this)) {
-            proxy.requestTokenVerify(ELoginPlatform.QQOpen, "productId", "dsn");
+            if (isSimpleInterface) {
+                proxy.tvsQQOpenVerify(qqOpenInfoManager.appId, qqOpenInfoManager.openID, qqOpenInfoManager.accessToken);
+            }
+            else {
+                proxy.requestTokenVerify(ELoginPlatform.QQOpen, "productId", "dsn");
+            }
         }
         else {
             qqOpenLoginBtn.setEnabled(true);

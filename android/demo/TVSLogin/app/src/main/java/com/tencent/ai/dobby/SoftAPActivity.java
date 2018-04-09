@@ -1,15 +1,15 @@
 package com.tencent.ai.dobby;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,22 +21,27 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.env.ELoginPlatform;
 import com.tencent.ai.tvs.info.ProductManager;
-import com.tencent.ai.tvsdevice.softap.ApNetworkConfigClient;
-import com.tencent.ai.tvsdevice.softap.ApNetworkConfigListener;
-import com.tencent.ai.tvsdevice.softap.ProductInfoListener;
-import com.tencent.ai.tvsdevice.softap.SoftAPConnListener;
-import com.tencent.ai.tvsdevice.softap.WifiConnManager;
+import com.tencent.ai.tvsdevice.cb.ProductInfoListener;
+import com.tencent.ai.tvsdevice.cb.SoftAPConnListener;
+import com.tencent.ai.tvsdevice.comm.LinkManager;
+import com.tencent.ai.tvsdevice.comm.NetworkConfigClient;
+import com.tencent.ai.tvsdevice.info.NetworkConfigInfo;
+import com.tencent.ai.tvsdevice.comm.ble.BleLinkManager;
+import com.tencent.ai.tvsdevice.comm.softAp.SoftApLinkManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +51,6 @@ public class SoftAPActivity extends AppCompatActivity {
 
     private static final int WIFI_PERMISSION_REQUEST_CODE = 101;
 
-    private static final int MSG_WAIT_FOR_AP_CONNECTED = 0;
     private static final int MSG_CONFIG_NETWORK_FOR_REMOTE_DEVICE = 1;
     private static final int MSG_CONFIG_NETWORK_COMPLETED = 2;
 
@@ -62,29 +66,90 @@ public class SoftAPActivity extends AppCompatActivity {
     private static final int SOFTAP_RESULT_SUCCESS = 2001;
     private static final int SOFTAP_RESULT_ERROR = 2002;
 
-    private WifiConnManager mConnManager;
-    private ApNetworkConfigClient mApNetworkConfigClient;
+    private NetworkConfigClient mNetworkConfigClient;
+
 
     private ListView mWifiListView;
     private EditText mWifiSsidView, mWifiPskView;
     private SwipeRefreshLayout mRefreshView;
-    private ProgressBar mAPConnProgress;
+    private ProgressDialog mProgressDialog;
 
-    private ArrayList<String> mWifiList;
-    private ArrayAdapter<String> mAdapter;
+    private DeviceListAdapter mAdapter;
+
+    private ArrayList<NetworkConfigInfo> mScanList = new ArrayList<NetworkConfigInfo>();
+    private LinkManager mLinkManager;
 
     private NetworkConfigHandler mHandler;
-    private String mCurrentNetworkSSID, mTargetApNetworkSSID, mConfigNetworkSSID, mConfigNetworkPSK;
-    private boolean mIsApConnected;
-
-    private int mWaitCount = 10;
 
     private ELoginPlatform platform;
+
+    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+            if (mRefreshView.isRefreshing()) {
+                mRefreshView.setRefreshing(false);
+            }
+
+            if (isExist(device.getAddress()))
+                return;
+
+            NetworkConfigInfo info = new NetworkConfigInfo();
+            info.bluetoothDevice = device;
+            mScanList.add(info);
+            mAdapter.notifyDataSetChanged();
+        }
+    };
+
+    private boolean isExist(String deviceAddress) {
+        for (NetworkConfigInfo info : mScanList) {
+            if (info.bluetoothDevice.getAddress().equals(deviceAddress))
+                return true;
+        }
+        return false;
+    }
+
+    private NetworkConfigClient.NetworkConfigListener mNetworkConfigListener = new NetworkConfigClient.NetworkConfigListener() {
+        @Override
+        public void onNetworkConfigResult(int resultCode, HashMap<String, String> data) {
+            mHandler.obtainMessage(MSG_CONFIG_NETWORK_COMPLETED, resultCode, 0, data).sendToTarget();
+        }
+    };
+
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (position >= mScanList.size())
+                return;
+
+            if (TextUtils.isEmpty(mWifiSsidView.getText().toString()))
+                Toast.makeText(SoftAPActivity.this, "请输入Wi-Fi名称", Toast.LENGTH_SHORT).show();
+
+            mHandler.obtainMessage(MSG_CONFIG_NETWORK_FOR_REMOTE_DEVICE, mScanList.get(position)).sendToTarget();
+        }
+    };
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
+                int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
+                if (state == WifiManager.WIFI_STATE_ENABLED) {
+                    updateScanList();
+                }
+            }
+            else if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                int btState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                if (btState == BluetoothAdapter.STATE_ON || btState == BluetoothAdapter.STATE_OFF) {
+                    updateScanList();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.softap_main);
 
         Bundle bundle = getIntent().getBundleExtra("bundle");
@@ -98,57 +163,49 @@ public class SoftAPActivity extends AppCompatActivity {
             }
         }
 
-        mWifiList = new ArrayList<String>();
-
         mWifiListView = (ListView) findViewById(R.id.wifi_list);
         mWifiSsidView = (EditText) findViewById(R.id.ssid);
         mWifiPskView  = (EditText) findViewById(R.id.psk);
-        mAPConnProgress = (ProgressBar) findViewById(R.id.apConnProgress);
         mRefreshView = (SwipeRefreshLayout) findViewById(R.id.refresh_view);
         mRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateWifiList();
+                updateScanList();
             }
         });
 
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("正在配网，请稍等...");
+
         mHandler = new NetworkConfigHandler();
-        mConnManager = new WifiConnManager(this);
-        mApNetworkConfigClient = new ApNetworkConfigClient();
+        mNetworkConfigClient = new NetworkConfigClient();
 
         mWifiListView.setOnItemClickListener(mItemClickListener);
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, mWifiList);
+        mAdapter = new DeviceListAdapter(this);
         mWifiListView.setAdapter(mAdapter);
 
+        // 申请权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                ContextCompat.checkSelfPermission(this, Manifest.permission_group.LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ContextCompat.checkSelfPermission(this, Manifest.permission_group.LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
-                    Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE,
-                    Manifest.permission.INTERNET}, WIFI_PERMISSION_REQUEST_CODE);
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.CHANGE_WIFI_STATE,
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.BLUETOOTH_ADMIN,
+                    Manifest.permission.BLUETOOTH
+            }, WIFI_PERMISSION_REQUEST_CODE);
         } else {
-            initWifiList();
+            updateScanList();
         }
-
-        updateCurrentNetworkSSID();
-        mWifiSsidView.setText(mCurrentNetworkSSID);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(mReceiver, filter);
-    }
-
-    private void updateCurrentNetworkSSID() {
-        WifiInfo info = mConnManager.getWifiInfo();
-        String curSsid = "";
-        if (info != null) {
-            curSsid = info.getSSID().replace("\"", "");
-            if (curSsid.equals("<unknown ssid>")) {
-                curSsid = "";
-            }
-        }
-        mCurrentNetworkSSID = curSsid;
     }
 
     @Override
@@ -157,10 +214,44 @@ public class SoftAPActivity extends AppCompatActivity {
         unregisterReceiver(mReceiver);
     }
 
-    private void initWifiList() {
-        if (mConnManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
-            mConnManager.openWifi();
+    private void updateScanList() {
+        mScanList.clear();
+        mAdapter.notifyDataSetChanged();
+
+        SoftApLinkManager apLinkManager = SoftApLinkManager.getInstance(this);
+        if (!apLinkManager.isWifiEnabled()) {
+            // 打开wifi
+            apLinkManager.openWifi();
+            return;
+        }
+        // 获取当前连接网络
+        mWifiSsidView.setText(apLinkManager.getCurrentNetworkSSID());
+
+        // 如果蓝牙打开，使用蓝牙配网，否则默认使用AP配网
+        if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+            final BleLinkManager bleLinkManager = BleLinkManager.getInstance(this);
+            if (mLinkManager == null || !(mLinkManager instanceof BleLinkManager)) {
+                mLinkManager = bleLinkManager;
+            }
+
+            if (!mRefreshView.isRefreshing()) {
+                mRefreshView.setRefreshing(true);
+            }
+            bleLinkManager.stopLeScan();
+            bleLinkManager.startLeScan(mLeScanCallback);
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mRefreshView.isRefreshing())
+                        mRefreshView.setRefreshing(false);
+
+                    bleLinkManager.stopLeScan();
+                }
+            }, 10000);
         } else {
+            if (mLinkManager == null || !(mLinkManager instanceof SoftApLinkManager))
+                mLinkManager = apLinkManager;
+
             updateWifiList();
         }
     }
@@ -176,13 +267,14 @@ public class SoftAPActivity extends AppCompatActivity {
 
             @Override
             protected List<ScanResult> doInBackground(Void... voids) {
-                mConnManager.startScan();
+                SoftApLinkManager link = (SoftApLinkManager) mLinkManager;
+                link.startScan();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                return mConnManager.getWifiList();
+                return link.getScanResultList();
             }
 
             @Override
@@ -191,11 +283,10 @@ public class SoftAPActivity extends AppCompatActivity {
                 if (scanResults == null)
                     return;
 
-                mWifiList.clear();
                 for (ScanResult scanRst : scanResults) {
-                    if (scanRst.SSID != null && !scanRst.SSID.equals("")) {
-                        mWifiList.add(scanRst.SSID);
-                    }
+                    NetworkConfigInfo info = new NetworkConfigInfo();
+                    info.ssid = scanRst.SSID;
+                    mScanList.add(info);
                 }
                 mAdapter.notifyDataSetChanged();
 
@@ -209,7 +300,7 @@ public class SoftAPActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == WIFI_PERMISSION_REQUEST_CODE) {
-            initWifiList();
+            updateScanList();
         }
     }
 
@@ -217,36 +308,26 @@ public class SoftAPActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case MSG_WAIT_FOR_AP_CONNECTED:
-                    mAPConnProgress.setVisibility(View.VISIBLE);
-                    if (!mIsApConnected) {
-                        if (mWaitCount-- > 0) {
-                            sendEmptyMessageDelayed(MSG_WAIT_FOR_AP_CONNECTED, 1000);
-                        } else {
-                            // 配网超时
-                            obtainMessage(MSG_CONFIG_NETWORK_COMPLETED, ApNetworkConfigClient.
-                                    RESULT_CODE_FAILED_BY_CONNECT_TO_AP_TIMEOUT, 0).sendToTarget();
-                        }
-                        return;
-                    }
-                    // 开始配网
-                    sendEmptyMessage(MSG_CONFIG_NETWORK_FOR_REMOTE_DEVICE);
-                    break;
                 case MSG_CONFIG_NETWORK_FOR_REMOTE_DEVICE:
-                    mApNetworkConfigClient.configNetworkForRemoteDevice(mConfigNetworkSSID, mConfigNetworkPSK, mApNetworkConfigListener, mSoftAPConnListener, mProductInfoListener);
+                    if (!mProgressDialog.isShowing()) {
+                        mProgressDialog.show();
+                    }
+                    NetworkConfigInfo info = (NetworkConfigInfo) msg.obj;
+                    info.configSsid = mWifiSsidView.getText().toString();
+                    info.configPsk = mWifiPskView.getText().toString();
+                    mNetworkConfigClient.configNetworkForRemoteDevice(mLinkManager, info, mNetworkConfigListener, mSoftAPConnListener, mProductInfoListener);
                     break;
                 case MSG_CONFIG_NETWORK_COMPLETED:
-                    mAPConnProgress.setVisibility(View.GONE);
-                    if (msg.arg1 == ApNetworkConfigClient.RESULT_CODE_SUCCESS) {
+                    if (mProgressDialog.isShowing()) {
+                        mProgressDialog.dismiss();
+                    }
+                    if (msg.arg1 == NetworkConfigClient.RESULT_CODE_SUCCESS) {
                         HashMap<String, String> data = (HashMap<String, String>) msg.obj;
                         String pid = data.get("PID");
                         String dsn = data.get("DSN");
                         Toast.makeText(SoftAPActivity.this, "Config AP Success", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(SoftAPActivity.this, "Config AP Fail: " + msg.arg1, Toast.LENGTH_SHORT).show();
-                    }
-                    if (!("").equals(mCurrentNetworkSSID)) {
-                        boolean ret = mConnManager.connectConfiguration("\"" + mCurrentNetworkSSID + "\"");
                     }
                     break;
                 case MSG_SEND_ING_START_TYPE:
@@ -323,6 +404,8 @@ public class SoftAPActivity extends AppCompatActivity {
         }
     }
 
+
+
     private ProductInfoListener mProductInfoListener = new ProductInfoListener() {
         @Override
         public String getProductInfo(String productId, String dsn) {
@@ -333,12 +416,7 @@ public class SoftAPActivity extends AppCompatActivity {
         }
     };
 
-    private ApNetworkConfigListener mApNetworkConfigListener = new ApNetworkConfigListener() {
-        @Override
-        public void onApNetworkConfigResult(int resultCode, HashMap<String, String> data) {
-            mHandler.obtainMessage(MSG_CONFIG_NETWORK_COMPLETED, resultCode, 0, data).sendToTarget();
-        }
-    };
+
 
     private SoftAPConnListener mSoftAPConnListener = new SoftAPConnListener() {
         @Override
@@ -396,51 +474,47 @@ public class SoftAPActivity extends AppCompatActivity {
         }
     };
 
-    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (position >= mWifiList.size())
-                return;
 
-            String apSsid = mWifiList.get(position);
-            String ssid = mWifiSsidView.getText().toString();
-            String psk = mWifiPskView.getText().toString();
+    private class DeviceListAdapter extends BaseAdapter {
+        private Context mContext;
 
-            updateCurrentNetworkSSID();
-            mIsApConnected = false;
-
-            WifiConfiguration configuration = mConnManager.createWifiInfo(apSsid, "", 1);
-            boolean ret = mConnManager.addNetwork(configuration);
-            if (!ret) {
-                mHandler.obtainMessage(MSG_CONFIG_NETWORK_COMPLETED, ApNetworkConfigClient.RESULT_CODE_FAILED_BY_CAN_NOT_CONNECT_TO_AP, 0).sendToTarget();
-                return;
-            }
-
-            mTargetApNetworkSSID = apSsid;
-            mConfigNetworkSSID = ssid;
-            mConfigNetworkPSK = psk;
-            mWaitCount = 10;
-            mHandler.sendEmptyMessage(MSG_WAIT_FOR_AP_CONNECTED);
+        public DeviceListAdapter(Context context) {
+            mContext = context;
         }
-    };
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
-                int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
-                if (state == WifiManager.WIFI_STATE_ENABLED) {
-                    updateWifiList();
-                }
-            }
-            else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
-                NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                if (!mIsApConnected && networkInfo != null && networkInfo.isConnected()
-                        && ("\"" + mTargetApNetworkSSID + "\"").equals(networkInfo.getExtraInfo())) {
-                    mIsApConnected = true;
-                }
-            }
+        public int getCount() {
+            return mScanList.size();
         }
-    };
+
+        @Override
+        public Object getItem(int position) {
+            return mScanList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(mContext).inflate(
+                        android.R.layout.simple_expandable_list_item_1, parent, false);
+            }
+
+            NetworkConfigInfo info = mScanList.get(position);
+            if (info.bluetoothDevice != null) {
+                String text = info.bluetoothDevice.getName();
+                if (TextUtils.isEmpty(text)) {
+                    text = info.bluetoothDevice.getAddress();
+                }
+                ((TextView) convertView).setText(text);
+            } else {
+                ((TextView) convertView).setText(info.ssid);
+            }
+            return convertView;
+        }
+    }
 }

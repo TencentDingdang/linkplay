@@ -25,7 +25,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".SmartLinkActivity" />
-        <activity android:name=".QRCodeActivity" />
         <activity android:name=".SoftAPActivity" />
     </application>
 
