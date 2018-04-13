@@ -1,8 +1,9 @@
 package com.tencent.ai.dobby;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,11 @@ import com.tencent.ai.tvs.AuthorizeListener;
 import com.tencent.ai.tvs.BindingListener;
 import com.tencent.ai.tvs.ConstantValues;
 import com.tencent.ai.tvs.LoginProxy;
+import com.tencent.ai.tvs.business.AlarmBusiness;
+import com.tencent.ai.tvs.business.AlarmBusinessDeviceInfo;
+import com.tencent.ai.tvs.business.AlarmBusinessInfo;
+import com.tencent.ai.tvs.business.EAlarmOper;
+import com.tencent.ai.tvs.business.EAlarmRepeatType;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
@@ -35,16 +41,25 @@ import com.tencent.ai.tvs.qrcode.QRStateListener;
 import com.tencent.ai.tvs.ui.UserCenterStateListener;
 import com.tencent.connect.common.Constants;
 
+import java.util.ArrayList;
+
 import SmartService.EAIPushIdType;
 import oicq.wlogin_sdk.request.WtloginHelper;
 
 public class MainActivity extends AppCompatActivity implements AuthorizeListener, BindingListener {
 
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String TEST_APPID_WX = "wxd077c3460b51e427";
     private static final String TEST_APPID_QQOPEN = "1105886239";
     private static final long TEST_APPID_QQ = 1600001268L;
 
+    private static final long TIME_MILLIS_DELTA = 1000 * 60 * 60;
+
+
+    private static final String TEST_APPKEY = "7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da";
+    private static final String TEST_APPACCEETOKEN = "9cb1fbf4c54442cc80c9aed8cb3c25b6";
+    private static final String TEST_GUID = "9cb1fbf4c54442cc80c9aed8cb3c25b6";
     private static final String TEST_PRODUCTID = "7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da:9cb1fbf4c54442cc80c9aed8cb3c25b6";
     private static final String TEST_DSN = "FF31F085A55DD019C8575CFB";
 
@@ -73,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button qqOpenLoginBtn, qqOpenLogoutBtn;
     private Button qqLoginBtn, qqLogoutBtn;
     private Button reportEndStateBtn, toUserCenterWithCallbackBtn, toGetClientIdBtn;
+    private Button alarmCreate, alarmDel, alarmUpdate, alarmQuery;
+    private long addedAlarmId;
 
     private TextView reportRelationTextView;
 
@@ -212,7 +229,79 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toGetClientIdBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "ClientId = " + proxy.getClientId(TEST_PLATFORM), Toast.LENGTH_SHORT).show();
+                Log.v(LOG_TAG, "ClientId = " + proxy.getClientId(TEST_PLATFORM));
+            }
+        });
+
+        alarmCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmBusiness business = new AlarmBusiness();
+
+                ArrayList<AlarmBusinessInfo> alarmBusinessInfos = new ArrayList<>();
+                AlarmBusinessInfo alarmBusinessInfo = getNewAlarmBusinessInfo();
+                alarmBusinessInfos.add(alarmBusinessInfo);
+
+                business.alarmBusinessInfos = alarmBusinessInfos;
+                business.alarmOper = EAlarmOper.CREATE;
+
+                proxy.requestAlarmManagement(TEST_PLATFORM, business);
+            }
+        });
+
+        alarmDel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmBusiness business = new AlarmBusiness();
+
+                ArrayList<AlarmBusinessInfo> alarmBusinessInfos = new ArrayList<>();
+                AlarmBusinessInfo alarmBusinessInfo = new AlarmBusinessInfo();
+                alarmBusinessInfo.deviceInfo = getAlarmBusinessDeviceInfo();
+                alarmBusinessInfo.alarmId = addedAlarmId;
+                alarmBusinessInfos.add(alarmBusinessInfo);
+
+                business.alarmBusinessInfos = alarmBusinessInfos;
+                business.alarmOper = EAlarmOper.DELETE;
+
+                proxy.requestAlarmManagement(TEST_PLATFORM, business);
+            }
+        });
+
+        alarmUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmBusiness business = new AlarmBusiness();
+
+                ArrayList<AlarmBusinessInfo> alarmBusinessInfos = new ArrayList<>();
+                AlarmBusinessInfo alarmBusinessInfo = new AlarmBusinessInfo();
+                alarmBusinessInfo.deviceInfo = getAlarmBusinessDeviceInfo();
+                alarmBusinessInfo.alarmId = addedAlarmId;
+                alarmBusinessInfo.alarmTime = System.currentTimeMillis() + TIME_MILLIS_DELTA * 2;
+                alarmBusinessInfo.note = "New Alarm note";
+                alarmBusinessInfo.repeatType = EAlarmRepeatType.DAY;
+                alarmBusinessInfos.add(alarmBusinessInfo);
+
+                business.alarmBusinessInfos = alarmBusinessInfos;
+                business.alarmOper = EAlarmOper.UPDATE;
+
+                proxy.requestAlarmManagement(TEST_PLATFORM, business);
+            }
+        });
+
+        alarmQuery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmBusiness business = new AlarmBusiness();
+
+                ArrayList<AlarmBusinessInfo> alarmBusinessInfos = new ArrayList<>();
+                AlarmBusinessInfo alarmBusinessInfo = new AlarmBusinessInfo();
+                alarmBusinessInfo.deviceInfo = getAlarmBusinessDeviceInfo();
+                alarmBusinessInfos.add(alarmBusinessInfo);
+
+                business.alarmBusinessInfos = alarmBusinessInfos;
+                business.alarmOper = EAlarmOper.QUERY;
+
+                proxy.requestAlarmManagement(TEST_PLATFORM, business);
             }
         });
 
@@ -542,6 +631,17 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 break;
             case AuthorizeListener.MANAGEACCT_TYPE:
                 break;
+            case AuthorizeListener.ALARMMANAGEMENT_TYPE:
+                AlarmBusiness alarmBusiness = ProductManager.getInstance().alarmBusiness;
+                ArrayList<AlarmBusinessInfo> effectBusinessInfos = alarmBusiness.alarmBusinessInfos;
+                EAlarmOper alarmOper = alarmBusiness.alarmOper;
+                Toast.makeText(MainActivity.this, alarmOper + " Alarms Size = " + effectBusinessInfos.size(), Toast.LENGTH_SHORT).show();
+                AlarmBusinessInfo alarmBusinessInfo = effectBusinessInfos.get(0);
+                if (EAlarmOper.CREATE == alarmOper) {
+                    addedAlarmId = alarmBusinessInfo.alarmId;
+                }
+                Log.v(LOG_TAG, alarmOper + " --- " + alarmBusinessInfo.toString());
+                break;
         }
     }
 
@@ -614,6 +714,9 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 break;
             case AuthorizeListener.MANAGEACCT_TYPE:
                 break;
+            case AuthorizeListener.ALARMMANAGEMENT_TYPE:
+                Toast.makeText(MainActivity.this, "alarmManagement onError", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
@@ -644,6 +747,11 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         qqLogoutBtn = (Button)findViewById(R.id.qqlogout);
 
         toGetClientIdBtn = (Button) findViewById(R.id.getclientidbtn);
+
+        alarmCreate = (Button) findViewById(R.id.alarmcreate);
+        alarmDel = (Button) findViewById(R.id.alarmdel);
+        alarmUpdate = (Button) findViewById(R.id.alarmupdate);
+        alarmQuery = (Button) findViewById(R.id.alarmquery);
 
         getCaptchaEditText = (EditText) findViewById(R.id.getcaptchaedittext);
         getCaptchaButton = (Button) findViewById(R.id.getcaptchabutton);
@@ -768,5 +876,21 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             qqTokenLayout.setVisibility(View.VISIBLE);
             qqATTextView.setText("AccessToken: " + qqInfoManager.accessToken);
         }
+    }
+
+    private AlarmBusinessDeviceInfo getAlarmBusinessDeviceInfo() {
+        AlarmBusinessDeviceInfo alarmBusinessDeviceInfo = new AlarmBusinessDeviceInfo();
+        alarmBusinessDeviceInfo.productId = TEST_PRODUCTID;
+        alarmBusinessDeviceInfo.guid = TEST_GUID;
+        return alarmBusinessDeviceInfo;
+    }
+
+    private AlarmBusinessInfo getNewAlarmBusinessInfo() {
+        AlarmBusinessInfo alarmBusinessInfo = new AlarmBusinessInfo();
+        alarmBusinessInfo.deviceInfo = getAlarmBusinessDeviceInfo();
+        alarmBusinessInfo.alarmTime = System.currentTimeMillis() + TIME_MILLIS_DELTA;
+        alarmBusinessInfo.note = "Alarm note";
+        alarmBusinessInfo.repeatType = EAlarmRepeatType.ONCE;
+        return alarmBusinessInfo;
     }
 }
