@@ -93,12 +93,11 @@ typedef NS_ENUM(NSInteger,TVSAlarmRepeatType) {
 /*!
  * @brief 实例化
  * @param business 业务名
- * @param guid
- * @param botKey
- * @param botToken
+ * @param botKey bot 的 key
+ * @param botToken bot 的 token
  * @return 实例
  */
--(instancetype)initWithBussiness:(NSString*)business guid:(NSString*)guid botKey:(NSString*)botKey botToken:(NSString*)botToken;
+-(instancetype)initWithBussiness:(NSString*)business botKey:(NSString*)botKey botToken:(NSString*)botToken;
 
 /*!
  * @brief 查询所有闹钟(提醒)
