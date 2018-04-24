@@ -20,8 +20,10 @@ import com.tencent.ai.tvs.LoginProxy;
 import com.tencent.ai.tvs.business.AlarmBusiness;
 import com.tencent.ai.tvs.business.AlarmBusinessDeviceInfo;
 import com.tencent.ai.tvs.business.AlarmBusinessInfo;
+import com.tencent.ai.tvs.business.EAlarmOpResultType;
 import com.tencent.ai.tvs.business.EAlarmOper;
 import com.tencent.ai.tvs.business.EAlarmRepeatType;
+import com.tencent.ai.tvs.comm.CommOpInfo;
 import com.tencent.ai.tvs.env.ELocationType;
 import com.tencent.ai.tvs.env.ELoginEnv;
 import com.tencent.ai.tvs.env.ELoginPlatform;
@@ -328,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 deviceManager.deviceType = TEST_DEVTYPE;
                 proxy.toUserCenter(EUserAttrType.HOMEPAGE, deviceManager, new UserCenterStateListener() {
                     @Override
-                    public void onSuccess(ELoginPlatform platform, int type) {
+                    public void onSuccess(ELoginPlatform platform, int type, CommOpInfo commOpInfo) {
                         switch (type) {
                             case UserCenterStateListener.LOGIN_TYPE:
                                 break;
@@ -338,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     }
 
                     @Override
-                    public void onError(int type) {
+                    public void onError(int type, CommOpInfo commOpInfo) {
                         switch (type) {
                             case UserCenterStateListener.LOGIN_TYPE:
                                 break;
@@ -346,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                     }
 
                     @Override
-                    public void onCancel(int type) {
+                    public void onCancel(int type, CommOpInfo commOpInfo) {
 
                     }
                 });
@@ -506,19 +508,19 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 LoginProxy loginProxy = LoginProxy.getWebInstance(null, null, MainActivity.this);
                 loginProxy.requestQRLogin(MainActivity.this, new QRStateListener() {
                     @Override
-                    public void onSuccess(ELoginPlatform platform, int type) {
+                    public void onSuccess(ELoginPlatform platform, int type, CommOpInfo commOpInfo) {
                         if (QRStateListener.LOGIN_TYPE == type) {
                             Toast.makeText(MainActivity.this, "QRLogin valid token", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onError(int type) {
+                    public void onError(int type, CommOpInfo commOpInfo) {
                         Toast.makeText(MainActivity.this, "QRLogin invalid token", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onCancel(int type) {
+                    public void onCancel(int type, CommOpInfo commOpInfo) {
 
                     }
                 });
@@ -551,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     }
 
     @Override
-    public void onSuccess(int type) {
+    public void onSuccess(int type, CommOpInfo commOpInfo) {
         switch (type)
         {
             case AuthorizeListener.AUTH_TYPE:
@@ -606,9 +608,6 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
                 devicebindTextView.setText("Bind Success Ex");
                 break;
-            case BindingListener.SET_PUSH_MAP_INFO_TYPE:
-                devicebindTextView.setText("Bind Success");
-                break;
             case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
                 deviceunbindTextView.setText("Unbind Success");
                 break;
@@ -640,13 +639,16 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 if (EAlarmOper.CREATE == alarmOper) {
                     addedAlarmId = alarmBusinessInfo.alarmId;
                 }
+                if (commOpInfo.retCode == EAlarmOpResultType.NO_ALARM_DATA.getOpResult()) {
+                    Log.v(LOG_TAG, "No Alarm Data");
+                }
                 Log.v(LOG_TAG, alarmOper + " --- " + alarmBusinessInfo.toString());
                 break;
         }
     }
 
     @Override
-    public void onError(int type) {
+    public void onError(int type, CommOpInfo commOpInfo) {
         switch (type)
         {
             case AuthorizeListener.AUTH_TYPE:
@@ -690,9 +692,6 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 break;
             case BindingListener.SET_PUSH_MAP_INFOEX_TYPE:
                 devicebindTextView.setText("Bind Error Ex");
-                break;
-            case BindingListener.SET_PUSH_MAP_INFO_TYPE:
-                devicebindTextView.setText("Bind Error");
                 break;
             case BindingListener.DEL_PUSH_MAP_INFO_TYPE:
                 deviceunbindTextView.setText("Unbind Error");
