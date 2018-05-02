@@ -1,4 +1,4 @@
-package com.tencent.ai.dobby;
+package com.tencent.ai.dobbydemo;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    private static final String TEST_APPID_WX = "wxd077c3460b51e427";
-    private static final String TEST_APPID_QQOPEN = "1105886239";
+    private static final String TEST_APPID_WX = "wxdbd76c1af795f58e";
+    private static final String TEST_APPID_QQOPEN = "101470979";
     private static final long TEST_APPID_QQ = 1600001268L;
 
     private static final long TIME_MILLIS_DELTA = 1000 * 60 * 60;
@@ -635,14 +635,17 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
                 ArrayList<AlarmBusinessInfo> effectBusinessInfos = alarmBusiness.alarmBusinessInfos;
                 EAlarmOper alarmOper = alarmBusiness.alarmOper;
                 Toast.makeText(MainActivity.this, alarmOper + " Alarms Size = " + effectBusinessInfos.size(), Toast.LENGTH_SHORT).show();
-                AlarmBusinessInfo alarmBusinessInfo = effectBusinessInfos.get(0);
-                if (EAlarmOper.CREATE == alarmOper) {
-                    addedAlarmId = alarmBusinessInfo.alarmId;
+                if (effectBusinessInfos != null && effectBusinessInfos.size() > 0) {
+                    AlarmBusinessInfo alarmBusinessInfo = effectBusinessInfos.get(0);
+                    Log.v(LOG_TAG, alarmOper + " --- " + alarmBusinessInfo.toString());
+                    if (EAlarmOper.CREATE == alarmOper) {
+                        addedAlarmId = alarmBusinessInfo.alarmId;
+                    }
                 }
+                Log.v(LOG_TAG, "retCode = " + commOpInfo.retCode);
                 if (commOpInfo.retCode == EAlarmOpResultType.NO_ALARM_DATA.getOpResult()) {
                     Log.v(LOG_TAG, "No Alarm Data");
                 }
-                Log.v(LOG_TAG, alarmOper + " --- " + alarmBusinessInfo.toString());
                 break;
         }
     }

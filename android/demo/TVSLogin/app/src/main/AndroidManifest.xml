@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tencent.ai.dobby"
+    package="com.tencent.ai.dobbydemo"
     android:versionCode="171204"
     android:versionName="171204_Beta">
 
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!-- Use CustomApplication Context Start -->
-        <!-- android:name="com.tencent.ai.dobby.CustomApplication -->
+        <!-- android:name="com.tencent.ai.dobbydemo.CustomApplication -->
         <!-- Use CustomApplication Context End -->
         <activity
             android:name=".MainActivity"
