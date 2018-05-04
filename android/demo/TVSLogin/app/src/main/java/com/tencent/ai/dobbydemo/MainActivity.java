@@ -39,6 +39,7 @@ import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
+import com.tencent.ai.tvs.qrcode.QRCustomViewListener;
 import com.tencent.ai.tvs.qrcode.QRStateListener;
 import com.tencent.ai.tvs.ui.UserCenterStateListener;
 import com.tencent.connect.common.Constants;
@@ -506,24 +507,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 LoginProxy loginProxy = LoginProxy.getWebInstance(null, null, MainActivity.this);
-                loginProxy.requestQRLogin(MainActivity.this, new QRStateListener() {
-                    @Override
-                    public void onSuccess(ELoginPlatform platform, int type, CommOpInfo commOpInfo) {
-                        if (QRStateListener.LOGIN_TYPE == type) {
-                            Toast.makeText(MainActivity.this, "QRLogin valid token", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onError(int type, CommOpInfo commOpInfo) {
-                        Toast.makeText(MainActivity.this, "QRLogin invalid token", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onCancel(int type, CommOpInfo commOpInfo) {
-
-                    }
-                });
+                loginProxy.requestQRLogin(MainActivity.this, qrStateListener, qrCustomViewListener);
             }
         });
     }
@@ -895,4 +879,46 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         alarmBusinessInfo.repeatType = EAlarmRepeatType.ONCE;
         return alarmBusinessInfo;
     }
+
+    QRStateListener qrStateListener = new QRStateListener() {
+        @Override
+        public void onSuccess(ELoginPlatform platform, int type, CommOpInfo commOpInfo) {
+            if (QRStateListener.LOGIN_TYPE == type) {
+                Toast.makeText(MainActivity.this, "QRLogin valid token", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onError(int type, CommOpInfo commOpInfo) {
+            Toast.makeText(MainActivity.this, "QRLogin invalid token", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCancel(int type, CommOpInfo commOpInfo) {
+
+        }
+    };
+
+    QRCustomViewListener qrCustomViewListener = new QRCustomViewListener() {
+
+        @Override
+        public int customViewVisibility() {
+            return View.VISIBLE;
+        }
+
+        @Override
+        public boolean customViewEnabled() {
+            return true;
+        }
+
+        @Override
+        public String customViewText() {
+            return "网络设置";
+        }
+
+        @Override
+        public void customViewListener() {
+            startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+        }
+    };
 }
