@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">TVSLogin</string>
     <string name="title_activity_soft_ap">SoftAPActivity</string>
+    <string name="qrstate_ready">请扫描登录</string>
+    <string name="qrstate_scaned">点击确认登录</string>
+
+    <string name="qrstate_result_succ">登录成功</string>
+    <string name="qrstate_result_normal_err">登录失败，一般错误</string>
+    <string name="qrstate_result_network_err">登录失败，网络错误</string>
+    <string name="qrstate_result_json_decode_err">json解码失败</string>
+    <string name="qrstate_result_user_cancel">用户取消</string>
+    <string name="qrstate_result_timeout_err">登录失败，超时错误</string>
 </resources>

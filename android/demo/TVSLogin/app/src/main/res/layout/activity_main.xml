@@ -344,22 +344,39 @@
         android:layout_below="@id/getstatuslayout">
         <Button
             android:id="@+id/tosmartlinkbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="To SmarkLink"/>
+            android:textSize="28px"
+            android:text="SmarkLink"/>
         <Button
             android:id="@+id/tosoftapbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="To SoftAP"/>
+            android:textSize="28px"
+            android:text="SoftAP"/>
         <Button
             android:id="@+id/toqrloginbtn"
-            android:layout_width="wrap_content"
+            android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="To QRLogin"/>
+            android:textSize="28px"
+            android:text="QRLogin"/>
+        <Button
+            android:id="@+id/generatewxqrcode"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textSize="28px"
+            android:text="wxQRCode"/>
+        <Button
+            android:id="@+id/reqminiprogram"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:textSize="28px"
+            android:text="MiniProg"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/wxtokenlayout"

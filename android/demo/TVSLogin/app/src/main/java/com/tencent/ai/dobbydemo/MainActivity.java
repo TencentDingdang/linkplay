@@ -1,12 +1,17 @@
 package com.tencent.ai.dobbydemo;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,10 +44,21 @@ import com.tencent.ai.tvs.info.QQInfoManager;
 import com.tencent.ai.tvs.info.QQOpenInfoManager;
 import com.tencent.ai.tvs.info.UserInfoManager;
 import com.tencent.ai.tvs.info.WxInfoManager;
+import com.tencent.ai.tvs.miniprogram.EMiniProgType;
+import com.tencent.ai.tvs.miniprogram.MiniProgCallback;
+import com.tencent.ai.tvs.miniprogram.MiniProgManager;
 import com.tencent.ai.tvs.qrcode.QRCustomViewListener;
 import com.tencent.ai.tvs.qrcode.QRStateListener;
+import com.tencent.ai.tvs.qrcodesdk.QRCodeProtocol;
+import com.tencent.ai.tvs.qrcodesdk.QRCodeStateListener;
+import com.tencent.ai.tvs.qrcodesdk.QRCodeUtil;
+import com.tencent.ai.tvs.qrcodesdk.WxQRCodeInfoManager;
 import com.tencent.ai.tvs.ui.UserCenterStateListener;
 import com.tencent.connect.common.Constants;
+import com.tencent.mm.opensdk.diffdev.DiffDevOAuthFactory;
+import com.tencent.mm.opensdk.diffdev.IDiffDevOAuth;
+import com.tencent.mm.opensdk.diffdev.OAuthErrCode;
+import com.tencent.mm.opensdk.diffdev.OAuthListener;
 
 import java.util.ArrayList;
 
@@ -54,8 +70,13 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
 
     private static final String TEST_APPID_WX = "wxdbd76c1af795f58e";
+    private static final String TEST_APPSECRET_WX = "";
     private static final String TEST_APPID_QQOPEN = "101470979";
     private static final long TEST_APPID_QQ = 1600001268L;
+
+    private static final String TEST_MINIPROG_USERNAME = "";
+    private static final String TEST_MINIPROG_MAIN_PATH = "";
+    private static final String TEST_MINIPROG_GRADE_PATH =  "";
 
     private static final long TIME_MILLIS_DELTA = 1000 * 60 * 60;
 
@@ -83,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private WxInfoManager wxInfoManager;
     private QQOpenInfoManager qqOpenInfoManager;
     private QQInfoManager qqInfoManager;
+
+    private IDiffDevOAuth oauth;
 
     private RadioGroup netEnvRG;
     private RadioButton testEnvRB, formalEnvRB;
@@ -128,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private Button getDeviceStatusButton;
     private TextView getDeviceStatusTextView;
 
-    private Button toSmartLinkButton, toSoftAPButton, toQRLoginButton;
+    private Button toSmartLinkButton, toSoftAPButton, toQRLoginButton, generateWXQRCodeButton, toMiniProgramButton;
 
     private LinearLayout wxTokenLayout, qqopenTokenLayout, qqTokenLayout;
     private TextView wxATTextView, wxRTTextView, qqopenATTextView, qqATTextView;
@@ -138,6 +161,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
     private static ELoginPlatform TEST_PLATFORM = ELoginPlatform.WX;
 
     private boolean isSimpleInterface;
+
+    private QRCodeProtocol mQRCodeProtocol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -507,7 +532,31 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
             @Override
             public void onClick(View v) {
                 LoginProxy loginProxy = LoginProxy.getWebInstance(null, null, MainActivity.this);
-                loginProxy.requestQRLogin(MainActivity.this, qrStateListener, qrCustomViewListener);
+                loginProxy.requestQRLogin(MainActivity.this, qrStateListener, qrCustomViewListener, true, true);
+            }
+        });
+
+        generateWXQRCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mQRCodeProtocol.reqAccessToken(TEST_APPID_WX, TEST_APPSECRET_WX);
+
+            }
+        });
+
+        toMiniProgramButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MiniProgManager mgr = new MiniProgManager();
+                mgr.userName = TEST_MINIPROG_USERNAME;
+                mgr.path = TEST_MINIPROG_MAIN_PATH;
+                mgr.progType = EMiniProgType.PREVIEW.ordinal();
+                proxy.tvsOpenMiniProgram(mgr, new MiniProgCallback() {
+                    @Override
+                    public void onReceiveExtMsg(String msg) {
+                        Log.v(LOG_TAG, "onReceiveExtMsg msg = " + msg);
+                    }
+                });
             }
         });
     }
@@ -775,6 +824,8 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         toSmartLinkButton = (Button) findViewById(R.id.tosmartlinkbtn);
         toSoftAPButton = (Button) findViewById(R.id.tosoftapbtn);
         toQRLoginButton = (Button) findViewById(R.id.toqrloginbtn);
+        generateWXQRCodeButton = (Button) findViewById(R.id.generatewxqrcode);
+        toMiniProgramButton = (Button) findViewById(R.id.reqminiprogram);
 
         wxTokenLayout = (LinearLayout) findViewById(R.id.wxtokenlayout);
         wxATTextView = (TextView)findViewById(R.id.accesstokenid);
@@ -805,6 +856,10 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         innerProxy.setOwnActivity(this);
         innerProxy.setAuthorizeListener(this);
         innerProxy.setBindingListener(this);
+
+        mQRCodeProtocol = QRCodeProtocol.getInstance();
+        mQRCodeProtocol.setQRCodeStateListener(mQRCodeSstateListener);
+        oauth = DiffDevOAuthFactory.getDiffDevOAuth();
 
         isSimpleInterface = false;
     }
@@ -919,6 +974,106 @@ public class MainActivity extends AppCompatActivity implements AuthorizeListener
         @Override
         public void customViewListener() {
             startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS));
+        }
+
+        @Override
+        public void customViewLongClickListener() {
+
+        }
+    };
+
+    QRCodeStateListener mQRCodeSstateListener = new QRCodeStateListener() {
+        @Override
+        public void onSuccess(int type, Object object) {
+            WxQRCodeInfoManager mgr = (WxQRCodeInfoManager)object;
+            switch (type) {
+                case QRCodeStateListener.REQ_ACCESSTOKEN:
+                    Log.v(LOG_TAG, "REQ_ACCESSTOKEN = " + mgr.toString());
+                    mQRCodeProtocol.reqTicket(mgr.qrcodeToken);
+                    break;
+                case QRCodeStateListener.REQ_TICKET:
+                    Log.v(LOG_TAG, "REQ_TICKET = " + mgr.toString());
+                    boolean sigReady = QRCodeUtil.prepareSig();
+                    if (sigReady) {
+                        boolean authRet = oauth.auth(TEST_APPID_WX, "snsapi_userinfo", QRCodeUtil.sNoncestr, QRCodeUtil.sTimeStamp,
+                                QRCodeUtil.generateSig(TEST_APPID_WX, WxQRCodeInfoManager.getInstance().qrcodeTicket), oAuthListener);
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public void onError(int type, Object object) {
+            switch (type) {
+                case QRCodeStateListener.REQ_ACCESSTOKEN:
+                    break;
+                case QRCodeStateListener.REQ_TICKET:
+                    break;
+            }
+        }
+    };
+
+    OAuthListener oAuthListener = new OAuthListener() {
+
+        AlertDialog.Builder dialogBuilder;
+        ImageView qrImage;
+        TextView qrText;
+
+        @Override
+        public void onAuthGotQrcode(String qrcodeImgPath, byte[] imgBuf) {
+            Log.v(LOG_TAG, "onAuthGotQrcode imgBuf length = " + imgBuf.length);
+            View customView = LayoutInflater.from(MainActivity.this).inflate(R.layout.qrcode_dialog,null);
+            qrImage = (ImageView) customView.findViewById(R.id.qrcodeImage);
+            qrText = (TextView) customView.findViewById(R.id.qrstateText);
+            qrImage.setImageBitmap(byteArrayToBitmap(imgBuf));
+            qrText.setText(R.string.qrstate_ready);
+            dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+            dialogBuilder.setView(customView);
+            dialogBuilder.show();
+        }
+
+        @Override
+        public void onQrcodeScanned() {
+            Log.v(LOG_TAG, "onQrcodeScanned");
+            qrText.setText(R.string.qrstate_scaned);
+        }
+
+        @Override
+        public void onAuthFinish(OAuthErrCode errCode, String authCode) {
+            Log.v(LOG_TAG, "onAuthFinish, errCode = " + errCode.toString() + ", authCode = " + authCode);
+            String tips = null;
+            switch (errCode) {
+                case WechatAuth_Err_OK:
+                    tips = getString(R.string.qrstate_result_succ);
+                    qrText.setText(tips);
+                    proxy.manageAcct(ELoginPlatform.WX, null, ConstantValues.APPLOGIC_OPER_TYPE_LOGIN, authCode);
+                    break;
+                case WechatAuth_Err_NormalErr:
+                    tips = getString(R.string.qrstate_result_normal_err);
+                    break;
+                case WechatAuth_Err_NetworkErr:
+                    tips = getString(R.string.qrstate_result_network_err);
+                    break;
+                case WechatAuth_Err_JsonDecodeErr:
+                    tips = getString(R.string.qrstate_result_json_decode_err);
+                    break;
+                case WechatAuth_Err_Cancel:
+                    tips = getString(R.string.qrstate_result_user_cancel);
+                    break;
+                case WechatAuth_Err_Timeout:
+                    tips = getString(R.string.qrstate_result_timeout_err);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private Bitmap byteArrayToBitmap(byte[] arr) {
+            if(arr.length != 0) {
+                return BitmapFactory.decodeByteArray(arr, 0, arr.length);
+            } else {
+                return null;
+            }
         }
     };
 }
