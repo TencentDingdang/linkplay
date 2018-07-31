@@ -33,13 +33,19 @@
  *
  * 收到一个来自微信的处理结果。调用一次sendReq后会收到onResp。
  * 可能收到的处理结果有SendMessageToWXResp、SendAuthResp等。
- * @param resp 具体的回应内容，是自动释放的
+ * @param resp具体的回应内容，是自动释放的
  */
 -(void) onResp:(BaseResp*)resp;
 
 @end
 
+#pragma mark - WXApiLogDelegate
 
+@protocol WXApiLogDelegate <NSObject>
+
+-(void) onLog:(NSString*)log logLevel:(WXLogLevel)level;
+
+@end
 
 #pragma mark - WXApi
 
@@ -55,6 +61,7 @@
  * iOS7及以上系统需要调起一次微信才会出现在微信的可用应用列表中。
  * @attention 请保证在主线程中调用此函数
  * @param appid 微信开发者ID
+ * @param typeFlag 应用支持打开的文件类型
  * @return 成功返回YES，失败返回NO。
  */
 +(BOOL) registerApp:(NSString *)appid;
@@ -162,4 +169,25 @@
 +(BOOL) sendResp:(BaseResp*)resp;
 
 
+/*! @brief WXApi的成员函数，接受微信的log信息。byBlock
+    注意1:SDK会强引用这个block,注意不要导致内存泄漏,注意不要导致内存泄漏
+    注意2:调用过一次startLog by block之后，如果再调用一次任意方式的startLoad,会释放上一次logBlock，不再回调上一个logBlock
+ *
+ *  @param level 打印log的级别
+ *  @param logBlock 打印log的回调block
+ */
++(void) startLogByLevel:(WXLogLevel)level logBlock:(WXLogBolock)logBlock;
+
+/*! @brief WXApi的成员函数，接受微信的log信息。byDelegate 
+    注意1:sdk会弱引用这个delegate，这里可加任意对象为代理，不需要与WXApiDelegate同一个对象
+    注意2:调用过一次startLog by delegate之后，再调用一次任意方式的startLoad,不会再回调上一个logDelegate对象
+ *  @param level 打印log的级别
+ *  @param logDelegate 打印log的回调代理，
+ */
++ (void)startLogByLevel:(WXLogLevel)level logDelegate:(id<WXApiLogDelegate>)logDelegate;
+
+/*! @brief 停止打印log，会清理block或者delegate为空，释放block
+ *  @param 
+ */
++ (void)stopLog;
 @end
