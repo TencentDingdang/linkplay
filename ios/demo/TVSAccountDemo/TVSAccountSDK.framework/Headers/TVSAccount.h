@@ -314,6 +314,21 @@ extern NSString* const TVSInvalidRefreshToken;
 -(BOOL)setUserProfileJson:(NSString*)json;
 
 /*!
+ * @brief 开始微信二维码登录
+ * @param imageHandler 获取到二维码回调
+ * @param scannedHandler 二维码被扫描回调
+ * @param finishHandler 完成授权回调，BOOL参数表示是否成功
+ * @return 是否请求成功
+ */
+-(BOOL)startWXQRCodeAuthWithImageHandler:(void(^)(UIImage*))imageHandler scannedHandler:(void(^)(void))scannedHandler finishHandler:(void(^)(BOOL))finishHandler;
+
+/*!
+ * @brief 停止微信二维码登录
+ * @return 是否成功
+ */
+-(BOOL)stopWXQRCodeAuth;
+
+/*!
  * @brief 获取账号信息
  * @warning 必须在已登录状态调用
  * @return accountInfo

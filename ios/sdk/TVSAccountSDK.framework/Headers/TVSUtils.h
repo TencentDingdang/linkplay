@@ -28,4 +28,14 @@
  */
 +(void)pickGuidWithOldGuid:(NSString*)oldGuid business:(NSString*)business productId:(NSString*)productId dsn:(NSString*)dsn qua:(NSString*)qua imei:(NSString*)imei lc:(NSString*)lc mac:(NSString*)mac handler:(void(^)(NSString*))handler;
 
+/*!
+ * @brief 启动微信小程序
+ * @param username 小程序用户名
+ * @param path 小程序路径
+ * @param type 小程序类型(0:正式，1:测试，2:体验)
+ * @param handler 回调，NSString 参数对应 JsApi navigateBackApplication 中的 extraData 字段数据
+ * @return 是否成功
+ */
++(BOOL)launchMiniProgramWithUsername:(NSString*)username path:(NSString*)path type:(NSInteger)type handler:(void(^)(NSString*))handler;
+
 @end
