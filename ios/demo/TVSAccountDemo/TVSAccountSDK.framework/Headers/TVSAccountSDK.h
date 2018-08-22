@@ -11,4 +11,5 @@
 #import <TVSAccountSDK/TVSDeviceBind.h>
 #import <TVSAccountSDK/TVSMember.h>
 #import <TVSAccountSDK/TVSAlarmManager.h>
+#import <TVSAccountSDK/TVSOCMS.h>
 #import <TVSAccountSDK/TVSUtils.h>

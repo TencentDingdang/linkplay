@@ -10,6 +10,27 @@
 
 
 /*!
+ * @brief TVS 后台环境
+ */
+typedef NS_ENUM(NSInteger,TVSServerEnv) {
+    /*!
+     * @brief 正式环境（默认）
+     */
+    TVSServerEnvFormal,
+    
+    /*!
+     * @brief 体验环境
+     */
+    TVSServerEnvExplore,
+    
+    /*!
+     * @brief 测试环境
+     */
+    TVSServerEnvTest
+};
+
+
+/*!
  * @class TVSEnvironment
  * @warning 必须在调用 TVSAccountSDK 其他接口前设置！！
  * @brief TVS 环境设置接口
@@ -17,9 +38,9 @@
 @interface TVSEnvironment : NSObject
 
 /*!
- * @brief 是否测试环境
+ * @brief 后台环境
  */
-@property(nonatomic,assign) BOOL test;
+@property(nonatomic,assign) TVSServerEnv serverEnv;
 
 /*!
  * @brief 是否开启日志
