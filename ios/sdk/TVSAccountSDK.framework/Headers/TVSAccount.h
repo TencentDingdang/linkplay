@@ -12,6 +12,50 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+
+
+/*!
+ * @brief TVS 账号类型
+ */
+typedef NS_ENUM(NSInteger,TVSAccountType) {
+    /*!
+     * @brief
+     */
+    TVSAccountTypeQQNumber,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypeQQOpenId,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypeWechatOpenId,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypePhoneNumber,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypeQbId,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypeIOSVistor,
+    
+    /*!
+     * @brief
+     */
+    TVSAccountTypeUnknown
+};
+
+
+
 /*!
  * @brief 非法的 ClientId 常量
  */
@@ -29,6 +73,11 @@ extern NSString* const TVSInvalidRefreshToken;
  * @brief 账号信息
  */
 @interface TVSAccountInfo : NSObject
+
+/*!
+ * @brief id类型
+ */
+@property(nonatomic,assign) TVSAccountType accountType;
 
 /*!
  * @brief 微信/QQ登录的 openID
@@ -140,9 +189,9 @@ extern NSString* const TVSInvalidRefreshToken;
 @interface TVSUserInfo : NSObject
 
 /*!
- * @brief id类型（0：微信，1：QQ）
+ * @brief id类型
  */
-@property(nonatomic,assign) NSInteger idType;
+@property(nonatomic,assign) TVSAccountType idType;
 
 /*!
  * @brief 昵称
