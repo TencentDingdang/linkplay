@@ -182,11 +182,13 @@
     NSString* deviceProductId = @"s7adsa7dsa78dsads7sad|ds8fds8fds8f8dsf98ds";
     NSString* deviceDSN = @"1g:3g:b4:7f:f8:d9:d0:k8";
     TVSPushDevice* tpd = [TVSPushDevice new];
+    tpd.productId = deviceProductId;
+    tpd.DSN = deviceDSN;
     //绑定设备
     [[TVSDeviceBind shared] bindDevice:tpd handler:^(BOOL success) {
         NSLog(@"绑定 %@", success ? @"成功" : @"失败");
     }];
-    //绑定设备
+    //解绑设备
     [[TVSDeviceBind shared] unbindDeviceWithProductId:deviceProductId dsn:deviceDSN handler:^(BOOL success) {
         NSLog(@"解绑 %@", success ? @"成功" : @"失败");
     }];
