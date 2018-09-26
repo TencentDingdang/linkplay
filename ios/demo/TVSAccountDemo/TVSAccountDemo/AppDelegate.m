@@ -13,7 +13,8 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    [TVSEnvironment shared].test = YES;
+    [TVSEnvironment shared].serverEnv = TVSServerEnvTest;//测试环境
+    [TVSEnvironment shared].logEnabled = YES;//开启日志
     [[TVSAccount shared]registerApp];
     return YES;
 }

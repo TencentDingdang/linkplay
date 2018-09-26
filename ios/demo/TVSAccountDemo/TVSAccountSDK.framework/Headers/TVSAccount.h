@@ -429,4 +429,13 @@ extern NSString* const TVSInvalidRefreshToken;
  */
 -(void)queryLocationWithHandler:(void(^)(NSArray*,NSArray*))handler;
 
+/*!
+ * @brief 设置用户自定义信息
+ * @warning 必须确保已登录
+ * @param nickName 昵称
+ * @param avatarUrl 头像url
+ * @param handler 回调，BOOL 值表示是否成功
+ */
+-(void)setCustomUserInfoWithNickName:(NSString*)nickName avatarUrl:(NSString*)avatarUrl handler:(void(^)(BOOL))handler;
+
 @end

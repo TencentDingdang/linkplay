@@ -7,97 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-
-/*!
- * @brief 设备绑定结果
- */
-typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
-    /*!
-     * @brief 设备绑定结果：成功
-     */
-    TVSBindDeviceResultSuccess,
-    
-    /*!
-     * @brief 设备绑定结果：已被绑定
-     */
-    TVSBindDeviceResultHasBinded,
-    
-    /*!
-     * @brief 设备绑定结果：参数格式错误
-     */
-    TVSBindDeviceResultParamsInvalid
-};
-
-
-
-/*!
- * @class TVSWLANDevice
- * @brief 扫描到的无线局域网叮当设备
- */
-@interface TVSWLANDevice : NSObject
-
-/*!
- * @brief 设备(无线局域网)IP 地址，用于后续设备绑定
- */
-@property(nonatomic,copy) NSString* deviceWlanIP;
-
-/*!
- * @brief 设备名
- */
-@property(nonatomic,copy) NSString* deviceName;
-
-/*!
- * @brief 厂商
- */
-@property(nonatomic,copy) NSString* manufacturer;
-
-/*!
- * @brief 品牌图标
- */
-@property(nonatomic,copy) NSString* brandIconUrl;
-
-/*!
- * @brief 设备号
- */
-@property(nonatomic,copy) NSString* DSN;
-
-/*!
- * @brief MAC地址
- */
-@property(nonatomic,copy) NSString* MAC;
-
-/*!
- * @brief openId
- */
-@property(nonatomic,copy) NSString* openId;
-
-/*!
- * @brief 包名
- */
-@property(nonatomic,copy) NSString* package;
-
-/*!
- * @brief 操作系统
- */
-@property(nonatomic,copy) NSString* OS;
-
-/*!
- * @brief 全局唯一标识
- */
-@property(nonatomic,copy) NSString* guid;
-
-/*!
- * @brief 设备类型
- */
-@property(nonatomic,assign) NSInteger type;
-
-/*!
- * @brief 是否已绑定叮当APP
- */
-@property(nonatomic,assign) BOOL isbinded;
-
-@end
+#import "TVSAccount.h"
 
 
 
@@ -106,6 +16,16 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  * @brief TVS Push 设备
  */
 @interface TVSPushDevice : NSObject
+
+/*!
+ * @brief productId TVS 后台申请的 appid:accessToken
+ */
+@property(nonatomic,copy) NSString* productId;
+
+/*!
+ * @brief DSN 设备序列号
+ */
+@property(nonatomic,copy) NSString* DSN;
 
 /*!
  * @brief pushId
@@ -121,16 +41,6 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  * @brief guid
  */
 @property(nonatomic,copy) NSString* guid;
-
-/*!
- * @brief productId
- */
-@property(nonatomic,copy) NSString* productId;
-
-/*!
- * @brief DSN
- */
-@property(nonatomic,copy) NSString* DSN;
 
 /*!
  * @brief deviceId 设备ID
@@ -202,6 +112,11 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
  */
 @property(nonatomic,assign) long long bindTime;
 
+/*!
+ * @brief extra 扩展信息
+ */
+@property(nonatomic,strong) NSDictionary* extra;
+
 @end
 
 
@@ -219,27 +134,33 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
 +(instancetype)shared;
 
 /*!
- * @brief 绑定 Push 相关信息
- * @warning 必须确保已登录
- * @param guid (APP或设备的)guid
- * @param pushId (APP或设备的)pushId
- * @param pushIdExtra (APP或设备的)pushIdExtra
- * @param pushDevice push 设备信息
- * @param isApp 是否 APP
- * @param handler 回调，BOOL 值表示是否成功
- */
--(void)bindPushInfoWithGuid:(NSString*)guid pushId:(NSString*)pushId pushIdExtra:(NSString*)pushIdExtra pushDevice:(TVSPushDevice*)pushDevice isApp:(BOOL)isApp handler:(void(^)(BOOL))handler;
-
-/*!
- * @brief 解除绑定 Push 相关信息
+ * @brief 绑定 APP
  * @warning 必须确保已登录
  * @param guid
- * @param pushId
- * @param pushIdExtra
- * @param pushDevice push设备
+ * @param deviceToken
+ * @param bundleId
+ * @param qua
+ * @param extra
  * @param handler 回调，BOOL 值表示是否成功
  */
--(void)unbindPushInfoWithGuid:(NSString*)guid pushId:(NSString*)pushId pushIdExtra:(NSString*)pushIdExtra pushDevice:(TVSPushDevice*)pushDevice handler:(void(^)(BOOL))handler;
+-(void)bindAppWithGuid:(NSString*)guid deviceToken:(NSString*)deviceToken bundleId:(NSString*)bundleId qua:(NSString*)qua extra:(NSDictionary*)extra handler:(void(^)(BOOL))handler;
+
+/*!
+ * @brief 绑定设备
+ * @warning 必须确保已登录
+ * @param pushDevice 设备信息，其中 productId 和 DSN(设备序列号)必传，其他字段根据需要透传
+ * @param handler 回调，BOOL 值表示是否成功
+ */
+-(void)bindDevice:(TVSPushDevice*)pushDevice handler:(void(^)(BOOL))handler;
+
+/*!
+ * @brief 解绑设备
+ * @warning 必须确保已登录
+ * @param productId 设备 productId
+ * @param dsn 设备序列号
+ * @param handler 回调，BOOL 值表示是否成功
+ */
+-(void)unbindDeviceWithProductId:(NSString*)productId dsn:(NSString*)dsn handler:(void(^)(BOOL))handler;
 
 /*!
  * @brief 查询绑定过的 push 设备列表
@@ -251,35 +172,10 @@ typedef NS_ENUM(NSInteger,TVSBindDeviceResult) {
 
 /*!
  * @brief 根据设备信息反查绑定的账号信息
- * @param pushDevice 设备信息
- * @param handler 回调，NSString 为账号 openId
+ * @param productId 设备 productId
+ * @param dsn 设备序列号
+ * @param handler 回调，TVSAccountInfo 为账号信息
  */
--(void)queryBoundAccountWithPushInfo:(TVSPushDevice*)pushDevice handler:(void(^)(NSString*))handler;
-
-///*!
-// * @brief 扫描当前无线局域网内(集成了叮当语音服务)的设备(音箱、电视、耳机等)
-// * @param handler 回调
-// */
-//-(void)discoverWlanDevicesWithHandler:(void(^)(TVSWLANDevice*))handler;
-//
-///*!
-// * @brief 将 WiFi 信息同步给待配网的叮当设备
-// * @warning 必须确保 APP 已接入设备所在热点 WiFi
-// * @param ssid WiFi 唯一标识
-// * @param password WiFi 密码
-// * @param ip 设备热点 WiFi 网关地址
-// * @param handler 回调
-// */
-//-(void)sendWifiSsid:(NSString*)ssid password:(NSString*)password ip:(NSString*)ip handler:(void(^)(TVSWLANDevice*))handler;
-//
-///*!
-// * @brief (APP绑定设备成功后)将账号信息同步给设备
-// * @warning 必须确保APP已登录
-// * @param deviceIp 扫描到的局域网设备IP地址
-// * @param bundleId App bundleId
-// * @param guid app guid
-// * @param handler 回调，参数为 TVSBindDeviceResult 枚举
-// */
-//-(void)sendAccountInfoToDeviceIp:(NSString*)deviceIp bundleId:(NSString*)bundleId guid:(NSString*)guid handler:(void(^)(TVSBindDeviceResult))handler;
+-(void)queryBoundAccountWithDeviceProductId:(NSString*)productId dsn:(NSString*)dsn handler:(void(^)(TVSAccountInfo*))handler;
 
 @end

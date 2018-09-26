@@ -15,4 +15,6 @@
 #import <TVSAccountSDK/TVSDeviceRelation.h>
 #import <TVSAccountSDK/TVSOCMS.h>
 #import <TVSAccountSDK/TVSTSKM.h>
+#import <TVSAccountSDK/TVSSpeaker.h>
+#import <TVSAccountSDK/TVSWebPage.h>
 #import <TVSAccountSDK/TVSUtils.h>

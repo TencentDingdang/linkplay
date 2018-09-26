@@ -8,8 +8,7 @@
 
 #import "LoginController.h"
 
-#import <TVSAccountSDK/TVSAccount.h>
-#import <TVSAccountSDK/TVSMember.h>
+#import <TVSAccountSDK/TVSAccountSDK.h>
 
 @interface LoginController()
 @property (strong, nonatomic) IBOutlet UIButton *btnWXLogin;
@@ -110,9 +109,9 @@
 
 //进入会员H5页面
 - (IBAction)onClickBtnUserCenter:(id)sender {
-    TVSMember* uc = [TVSMember new];
-    [uc setDeviceType:@"mDeviceType" deviceOEM:@"mDeviceOEM" productId:@"7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da:9cb1fbf4c54442cc80c9aed8cb3c25b6" DSN:@"mDSN"];
-    [uc enterPage:TVSPageTypeMember fromViewController:self title:@"个人中心" delegate:nil];
+    TVSWebPage* twp = [TVSWebPage new];
+    [twp setDeviceType:@"mDeviceType" deviceOEM:@"mDeviceOEM" productId:@"7e8ab486-c6f6-4ecc-b52e-7ea8da82c9da:9cb1fbf4c54442cc80c9aed8cb3c25b6" DSN:@"mDSN"];
+    [twp enterPage:TVSWebPageTypeMember fromViewController:self title:@"个人中心" delegate:nil];
 
 //    if ([TVSAccount shared].isWXTokenExist || [TVSAccount shared].isQQTokenExist) {//必须先登录
 //        NSString* phone= @"13987654321";
@@ -176,6 +175,35 @@
         NSRange bottom = NSMakeRange(_tvResult.text.length - 1, 1);
         [_tvResult scrollRangeToVisible:bottom];
     }
+}
+
+#pragma mark 设备绑定相关示例
+-(void)testDeviceBind {
+    NSString* deviceProductId = @"s7adsa7dsa78dsads7sad|ds8fds8fds8f8dsf98ds";
+    NSString* deviceDSN = @"1g:3g:b4:7f:f8:d9:d0:k8";
+    TVSPushDevice* tpd = [TVSPushDevice new];
+    //绑定设备
+    [[TVSDeviceBind shared] bindDevice:tpd handler:^(BOOL success) {
+        NSLog(@"绑定 %@", success ? @"成功" : @"失败");
+    }];
+    //绑定设备
+    [[TVSDeviceBind shared] unbindDeviceWithProductId:deviceProductId dsn:deviceDSN handler:^(BOOL success) {
+        NSLog(@"解绑 %@", success ? @"成功" : @"失败");
+    }];
+    //查询绑定的设备列表
+    [[TVSDeviceBind shared]queryPushDevicesWithHandler:^(NSArray<TVSPushDevice *> * devices) {
+        if (devices) {
+            for (TVSPushDevice* d in devices) {
+                NSLog(@"deviceProductId:%@ deviceDSN:%@", d.productId, d.DSN);
+            }
+        }
+    }];
+    //根据设备信息查询绑定的账户信息
+    [[TVSDeviceBind shared]queryBoundAccountWithDeviceProductId:deviceProductId dsn:deviceDSN handler:^(TVSAccountInfo * account) {
+        if (account) {
+            NSLog(@"openId: %@", account.openId);
+        }
+    }];
 }
 
 @end
