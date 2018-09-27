@@ -29,8 +29,8 @@
  * @param domain TSKM 服务领域
  * @param intent TSKM 服务意图
  * @param blobInfo 传入的参数字典
- * @param handler 回调，NSDictionary 类型参数为返回的字典数据
+ * @param handler 回调，BOOL参数表示是否成功，NSDictionary 参数为返回的字典数据
  */
--(void)uniAccessWithDeviceSerialNum:(NSString*)deviceSerialNum deviceGuid:(NSString*)deviceGuid deviceProductId:(NSString*)deviceProductId domain:(NSString*)domain intent:(NSString*)intent blobInfo:(NSDictionary*)blobInfo handler:(void(^)(NSDictionary*))handler;
+-(void)uniAccessWithDeviceSerialNum:(NSString*)deviceSerialNum deviceGuid:(NSString*)deviceGuid deviceProductId:(NSString*)deviceProductId domain:(NSString*)domain intent:(NSString*)intent blobInfo:(NSDictionary*)blobInfo handler:(void(^)(BOOL,NSDictionary*))handler;
 
 @end
